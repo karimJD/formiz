@@ -1,12 +1,11 @@
 import React from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
-import {
-  ChakraProvider, CSSReset, Box, Flex,
-} from '@chakra-ui/react';
+import { ChakraProvider, CSSReset, Box, Flex } from '@chakra-ui/react';
 
 import theme from './theme';
 import { NavBar } from './layout/NavBar';
 import { AutoForm } from './pages/AutoForm';
+import { Playground } from './pages/Playground';
 import { Wizard } from './pages/Wizard';
 import { Repeater } from './pages/Repeater';
 import { LotOfFields } from './pages/LotOfFields';
@@ -30,6 +29,9 @@ function App() {
           <Box flex="1" w="100%" position="relative">
             <Route path="/" exact>
               <AutoForm />
+            </Route>
+            <Route path="/playground" exact>
+              <Playground />
             </Route>
             <Route path="/wizard" exact>
               <Wizard />

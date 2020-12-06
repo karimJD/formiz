@@ -8,6 +8,7 @@
     "@emotion/react": "11.1.2",
     "@emotion/styled": "11.0.0",
     "@formiz/core": "^1.0.0",
+    "@formiz/core-v2": "^1.0.0",
     "@formiz/validations": "^1.0.0",
     "framer-motion": "2.9.5",
     "react": "16.13.1",
