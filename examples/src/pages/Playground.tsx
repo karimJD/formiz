@@ -47,9 +47,7 @@ const Field = (props) => {
 };
 
 const DebugState = () => {
-  const { state } = useForm((s) =>
-    s.fields?.find((x) => x.name === 'firstname'),
-  );
+  const { state } = useForm((s) => s);
   return (
     <>
       <Box as="pre" position="relative">
@@ -61,7 +59,7 @@ const DebugState = () => {
 };
 
 export const Playground = () => {
-  const { connect, state } = useForm();
+  const { connect, state } = useForm((s) => s.form);
   return (
     <PageLayout>
       <PageHeader githubPath="Playground.js">
@@ -75,6 +73,13 @@ export const Playground = () => {
           <DebugState />
           <Divider />
           <pre>{JSON.stringify(state || {}, null, 2)}</pre>
+          {[...Array(1)].map((_x, index) => (
+            <Field
+              // eslint-disable-next-line react/no-array-index-key
+              key={index}
+              name={`user[${index}].email`}
+            />
+          ))}
         </Stack>
       </Formiz>
     </PageLayout>

@@ -1,4 +1,4 @@
-import { useCallback, useContext } from 'react';
+import { useCallback, useContext, useEffect } from 'react';
 import shallow from 'zustand/shallow';
 import { FormizContext } from './Formiz';
 
@@ -12,7 +12,9 @@ export const useField = (props: any) => {
     ),
     shallow,
   );
-  const { setField } = useStore(useCallback((state: any) => state.actions, []));
+  const { registerField, setField } = useStore(
+    useCallback((state: any) => state.actions, []),
+  );
 
   const setValue = useCallback(
     (newValue) => {
@@ -20,6 +22,10 @@ export const useField = (props: any) => {
     },
     [name, setField],
   );
+
+  useEffect(() => {
+    registerField(name);
+  }, [registerField, name]);
 
   return { value: field?.value, setValue };
 };
