@@ -2,8 +2,9 @@ import React from 'react';
 import { Box, Flex } from '@chakra-ui/react';
 import { Debug } from '../components/Debug';
 import { useDarkTheme } from '../hooks/isDarkTheme';
+import { DebugV2 } from '../components/DebugV2';
 
-export const PageLayout = ({ children }) => {
+export const PageLayout = ({ children, v2 = false }) => {
   const isDarkTheme = useDarkTheme();
 
   return (
@@ -39,7 +40,7 @@ export const PageLayout = ({ children }) => {
         color="gray.100"
         p={{ base: 4, lg: 8 }}
       >
-        <Debug />
+        {v2 ? <DebugV2 /> : <Debug />}
       </Flex>
     </Flex>
   );

@@ -1,71 +1,29 @@
 import React, { useRef, useEffect } from 'react';
-import { Field } from './types';
-import create from 'zustand';
+import { getFormUniqueId } from './utils/ids';
+import { FormProps } from './types';
+import { createStore } from './store';
 
 export const FormizContext = React.createContext<any>(null);
 
-export const Formiz = ({ connect, ...rest }: any) => {
+export const Formiz = ({
+  children = null,
+  connect,
+  id = getFormUniqueId(),
+}: FormProps) => {
   const useStoreRef = useRef<any>();
   if (!useStoreRef.current) {
-    useStoreRef.current = create((set, get) => ({
-      form: {
-        resetKey: 0,
-        isValid: true,
-        isValidating: false,
-        isSubmitted: false,
-        isStepValid: true,
-        isStepValidating: false,
-        isStepSubmitted: false,
-      },
-      fields: [],
-
-      actions: {
-        registerField(name: string) {
-          set((state: any) => {
-            const fields = [...state.fields, { name, value: '' }];
-            const form = {
-              ...state.form,
-              isValid: fields.every((x: any) => !!x.value),
-            };
-            return {
-              form,
-              fields,
-            };
-          });
-        },
-        setField(field: Field) {
-          set((state: any) => {
-            const oldField =
-              state.fields.find((x: any) => x.name === field.name) || {};
-            const otherFields = state.fields.filter(
-              (x: any) => x.name !== field.name,
-            );
-            const fields = [...otherFields, { ...oldField, ...field }];
-            const form = {
-              ...state.form,
-              isValid: fields.every((x: any) => !!x.value),
-            };
-            return {
-              form,
-              fields,
-            };
-          });
-        },
-      },
-    }));
+    useStoreRef.current = createStore(id);
   }
 
   useEffect(() => {
     if (connect) {
-      console.log('connect');
       connect(useStoreRef.current);
     }
   }, [connect]);
 
   return (
-    <FormizContext.Provider
-      value={{ useStore: useStoreRef.current }}
-      {...rest}
-    />
+    <FormizContext.Provider value={{ useStore: useStoreRef.current }}>
+      {children}
+    </FormizContext.Provider>
   );
 };

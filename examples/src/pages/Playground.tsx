@@ -61,27 +61,25 @@ const DebugState = () => {
 export const Playground = () => {
   const { connect, state } = useForm((s) => s.form);
   return (
-    <PageLayout>
-      <PageHeader githubPath="Playground.js">
-        Playground
-        <DebugRender />
-      </PageHeader>
-      <Formiz connect={connect}>
+    <Formiz connect={connect}>
+      <PageLayout v2>
+        <PageHeader githubPath="Playground.js">
+          Playground
+          <DebugRender />
+        </PageHeader>
         <Stack spacing="6">
           <Field label="Firstname" name="firstname" />
           <Field label="Lastname" name="lastname" />
-          <DebugState />
-          <Divider />
           <pre>{JSON.stringify(state || {}, null, 2)}</pre>
           {[...Array(1)].map((_x, index) => (
             <Field
-              // eslint-disable-next-line react/no-array-index-key
               key={index}
+              label={`Email ${index + 1}`}
               name={`user[${index}].email`}
             />
           ))}
         </Stack>
-      </Formiz>
-    </PageLayout>
+      </PageLayout>
+    </Formiz>
   );
 };
