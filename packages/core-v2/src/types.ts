@@ -90,9 +90,17 @@ export interface FormizStepProps {
 }
 
 export interface FormizProps {
-  children?: ReactNode;
+  autoForm?: boolean;
+  children?: React.ReactNode;
   connect?(store: any): void;
+  initialValues?: object;
   id?: string;
+  onChange?(values?: object): void;
+  onSubmit?(values?: object): void;
+  onValidSubmit?(values?: object): void;
+  onInvalidSubmit?(values?: object): void;
+  onValid?(): void;
+  onInvalid?(): void;
 }
 
 export interface FormExposedActions {

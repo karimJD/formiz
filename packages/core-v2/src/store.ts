@@ -1,5 +1,6 @@
+import { RefObject } from 'react';
 import create from 'zustand';
-import { FieldState, State } from './types';
+import { FieldState, FormizProps, State } from './types';
 import { getDefaultField, getDefaultStep } from './utils/form.utils';
 
 const isFormValid = (fields: FieldState[]): boolean =>
@@ -10,7 +11,13 @@ const isFormValid = (fields: FieldState[]): boolean =>
       !field?.externalErrors?.length,
   );
 
-export const createStore = (id: string) =>
+export const createStore = ({
+  id,
+  onSubmitRef,
+}: {
+  id: string;
+  onSubmitRef: RefObject<FormizProps['onSubmit']>;
+}) =>
   create<State>((set, get) => ({
     form: {
       id,
@@ -106,7 +113,33 @@ export const createStore = (id: string) =>
       },
     },
     exposedActions: {
-      submit: (event) => {},
+      submit: (event) => {
+        if (event) event.preventDefault();
+
+        if (onSubmitRef.current) {
+          onSubmitRef.current({ demo: 'test' });
+        }
+
+        // const { steps } = formStateRef.current;
+        // updateFormState({
+        //   isSubmitted: true,
+        //   steps: steps.map((step) => ({ ...step, isSubmitted: true })),
+        // });
+
+        // const formattedValues = getFormValues(fieldsRef.current);
+
+        // if (formStateRef.current.isValidating) {
+        //   return;
+        // }
+
+        // if (formStateRef.current.isValid) {
+        //   onValidSubmitRef.current(formattedValues);
+        // } else {
+        //   onInvalidSubmitRef.current(formattedValues);
+        // }
+
+        // onSubmitRef.current(formattedValues);
+      },
       setFieldsValues: (objectOfValues) => {},
       invalidateFields: (objectOfErrors) => {},
       getFieldStepName: (fieldName) => null,

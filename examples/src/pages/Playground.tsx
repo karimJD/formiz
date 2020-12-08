@@ -12,6 +12,7 @@ import {
   InputGroup,
   InputRightElement,
   Spinner,
+  Button,
 } from '@chakra-ui/react';
 
 import { PageHeader } from '../components/PageHeader';
@@ -72,91 +73,99 @@ const Field = (props) => {
 // };
 
 export const Playground = () => {
-  const { connect, state } = useForm((s) => s.form);
+  const { connect, submit, state } = useForm((s) => s.form);
+  const handleSubmit = (...args) => {
+    console.log(...args);
+  };
   return (
-    <Formiz connect={connect}>
+    <Formiz connect={connect} onSubmit={handleSubmit}>
       <PageLayout v2>
         <PageHeader githubPath="Playground.js">
           Playground
           <DebugRender />
         </PageHeader>
-        <Stack spacing="6">
-          <Field
-            label="Firstname"
-            name="firstname"
-            validations={[
-              {
-                rule: (value) => !!value,
-                message: 'Required',
-              },
-            ]}
-            asyncValidations={[
-              {
-                rule: async (value) =>
-                  new Promise((r) =>
-                    setTimeout(() => {
-                      r(value === 'yes');
-                    }, 2000),
-                  ),
-                message: 'Async Required',
-              },
-            ]}
-          />
-          <FormizStep
-            name="step2"
-            style={{
-              border: '1px dashed red',
-              padding: '40px',
-              position: 'relative',
-            }}
-          >
-            <DebugRender />
+        <form onSubmit={submit}>
+          <Stack spacing="6">
             <Field
-              label="Lastname"
-              name="lastname"
+              label="Firstname"
+              name="firstname"
               validations={[
                 {
                   rule: (value) => !!value,
                   message: 'Required',
                 },
               ]}
-            />
-          </FormizStep>
-          <Box
-            as={FormizStep}
-            name="step3"
-            pos="relative"
-            p="40px"
-            border="1px dashed"
-            borderColor="red.500"
-          >
-            <DebugRender />
-            <Field
-              label="Other"
-              name="other"
-              validations={[
+              asyncValidations={[
                 {
-                  rule: (value) => !!value,
-                  message: 'Required',
+                  rule: async (value) =>
+                    new Promise((r) =>
+                      setTimeout(() => {
+                        r(value === 'yes');
+                      }, 2000),
+                    ),
+                  message: 'Async Required',
                 },
               ]}
             />
-          </Box>
-          <pre>{JSON.stringify(state || {}, null, 2)}</pre>
-          {[...Array(1)].map((_x, index) => (
-            <Field
-              key={index}
-              label={`Email ${index + 1}`}
-              name={`user[${index}].email`}
-              validations={[
-                {
-                  rule: (value) => !!value,
-                  message: 'Required',
-                },
-              ]}
-            />
-          ))}
-        </Stack>
+            <FormizStep
+              name="step2"
+              style={{
+                border: '1px dashed red',
+                padding: '40px',
+                position: 'relative',
+              }}
+            >
+              <DebugRender />
+              <Field
+                label="Lastname"
+                name="lastname"
+                validations={[
+                  {
+                    rule: (value) => !!value,
+                    message: 'Required',
+                  },
+                ]}
+              />
+            </FormizStep>
+            <Box
+              as={FormizStep}
+              name="step3"
+              pos="relative"
+              p="40px"
+              border="1px dashed"
+              borderColor="red.500"
+            >
+              <DebugRender />
+              <Field
+                label="Other"
+                name="other"
+                validations={[
+                  {
+                    rule: (value) => !!value,
+                    message: 'Required',
+                  },
+                ]}
+              />
+            </Box>
+            <pre>{JSON.stringify(state || {}, null, 2)}</pre>
+            {[...Array(1)].map((_x, index) => (
+              <Field
+                key={index}
+                label={`Email ${index + 1}`}
+                name={`user[${index}].email`}
+                validations={[
+                  {
+                    rule: (value) => !!value,
+                    message: 'Required',
+                  },
+                ]}
+              />
+            ))}
+            <Box>
+              <Button type="submit">Submit</Button>
+            </Box>
+          </Stack>
+        </form>
       </PageLayout>
     </Formiz>
   );

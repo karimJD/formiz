@@ -10,10 +10,16 @@ export const Formiz: React.FC<FormizProps> = ({
   children = null,
   connect,
   id = getFormUniqueId(),
+  onSubmit = () => {},
 }) => {
   const useStoreRef = useRef<UseStore<State>>();
+  const onSubmitRef = useRef<FormizProps['onSubmit']>();
+  onSubmitRef.current = onSubmit;
   if (!useStoreRef.current) {
-    useStoreRef.current = createStore(id);
+    useStoreRef.current = createStore({
+      id,
+      onSubmitRef,
+    });
   }
 
   useEffect(() => {
