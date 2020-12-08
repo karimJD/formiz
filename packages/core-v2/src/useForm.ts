@@ -1,31 +1,40 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import omit from 'lodash/omit';
 import { UseStore } from 'zustand';
 import shallow from 'zustand/shallow';
-import { State } from './types';
+import { State, FormExposedActions } from './types';
 import { FormizContext } from './Formiz';
 
-export const useForm = (
-  selector = (state: Omit<State, 'actions'>): any => {},
-) => {
+export const defaultExposedActions: FormExposedActions = {
+  submit: () => {},
+  setFieldsValues: () => {},
+  invalidateFields: () => {},
+  getFieldStepName: () => '',
+  submitStep: () => {},
+  goToStep: () => {},
+  nextStep: () => {},
+  prevStep: () => {},
+  reset: () => {},
+};
+
+export const useForm = (selector = (state: State): any => {}) => {
   const ctx = useContext(FormizContext);
   const connectedStoreRef = useRef<UseStore<State>>();
-  const selectorRef = useRef<(state: Omit<State, 'actions'>) => any>();
+  const selectorRef = useRef<(state: State) => any>();
   selectorRef.current = selector;
 
-  const actions = ctx?.useStore((s) => s.actions);
-  const state = ctx?.useStore((s) => selector(omit(s, 'actions')));
-  const [connectedActions, setConnectedActions] = useState(); // TODO Default actions
+  const exposedActions = ctx?.useStore((s) => s.exposedActions);
+  const state = ctx?.useStore((s) => selector(s));
+  const [connectedExposedActions, setConnectedExposedActions] = useState(
+    defaultExposedActions,
+  );
   const [connectedState, setConnectedState] = useState();
 
   const connect = useCallback(
     (store) => {
       if (ctx) return;
       connectedStoreRef.current = store;
-      setConnectedActions(store.getState().actions);
-      setConnectedState(
-        selectorRef.current?.(omit(store.getState(), 'actions')),
-      );
+      setConnectedExposedActions(store.getState().exposedActions);
+      setConnectedState(selectorRef.current?.(store.getState()));
     },
     [ctx],
   );
@@ -36,7 +45,7 @@ export const useForm = (
         (s: any) => {
           setConnectedState(s);
         },
-        (s) => selectorRef.current?.(omit(s, 'actions')),
+        (s) => selectorRef.current?.(s),
         shallow,
       ),
     [],
@@ -44,7 +53,7 @@ export const useForm = (
 
   return {
     connect,
-    ...(actions || connectedActions),
+    ...(exposedActions || connectedExposedActions),
     state: state || connectedState,
   };
 };

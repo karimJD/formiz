@@ -1,6 +1,6 @@
 import create from 'zustand';
 import { FieldState, State } from './types';
-import { getDefaultField } from './utils/form.utils';
+import { getDefaultField, getDefaultStep } from './utils/form.utils';
 
 const isFormValid = (fields: FieldState[]): boolean =>
   fields.every(
@@ -18,20 +18,41 @@ export const createStore = (id: string) =>
       isValid: true,
       isValidating: false,
       isSubmitted: false,
-      isStepValid: true,
-      isStepValidating: false,
-      isStepSubmitted: false,
+      initialStepName: null,
+      navigatedStepName: null,
     },
     steps: [],
     fields: [],
-    actions: {
-      registerField(name, defaultField) {
+    internalActions: {
+      registerStep: (name, step) => {
+        set((state) => {
+          const steps = [
+            ...state.steps,
+            {
+              ...getDefaultStep(name),
+              ...step,
+            },
+          ];
+          return {
+            steps,
+          };
+        });
+      },
+      unregisterStep: (name) => {
+        set((state) => {
+          const steps = state.steps.filter((s) => s.name !== name);
+          return {
+            steps,
+          };
+        });
+      },
+      registerField: (name, field) => {
         set((state) => {
           const fields = [
             ...state.fields,
             {
               ...getDefaultField(name),
-              ...(defaultField || {}),
+              ...(field || {}),
             },
           ];
           const form = {
@@ -44,7 +65,7 @@ export const createStore = (id: string) =>
           };
         });
       },
-      unregisterField(id) {
+      unregisterField: (id) => {
         set((state) => {
           const fields = state.fields.filter((f) => f.id !== id);
           const form = {
@@ -57,7 +78,7 @@ export const createStore = (id: string) =>
           };
         });
       },
-      updateField(id, field) {
+      updateField: (id, field) => {
         set((state) => {
           if (!id) return {};
 
@@ -83,5 +104,16 @@ export const createStore = (id: string) =>
           };
         });
       },
+    },
+    exposedActions: {
+      submit: (event) => {},
+      setFieldsValues: (objectOfValues) => {},
+      invalidateFields: (objectOfErrors) => {},
+      getFieldStepName: (fieldName) => null,
+      submitStep: (event) => {},
+      goToStep: (stepName) => {},
+      nextStep: () => {},
+      prevStep: () => {},
+      reset: () => {},
     },
   }));

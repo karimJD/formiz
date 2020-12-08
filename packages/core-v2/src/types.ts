@@ -63,9 +63,8 @@ export interface FormState {
   isValid: boolean;
   isValidating: boolean;
   isSubmitted: boolean;
-  isStepValid: boolean;
-  isStepValidating: boolean;
-  isStepSubmitted: boolean;
+  initialStepName: string | null;
+  navigatedStepName: string | null;
 }
 export interface StepState {
   name: string;
@@ -78,12 +77,6 @@ export interface StepState {
   isValidating: boolean;
   isSubmitted: boolean;
   isEnabled: boolean;
-}
-
-export interface FormActions {
-  registerField(name: string, defaultField?: Partial<FieldState>): void;
-  unregisterField(id: string): void;
-  updateField(id: string, field: Partial<FieldState>): void;
 }
 
 export interface FormizStepProps {
@@ -102,9 +95,30 @@ export interface FormizProps {
   id?: string;
 }
 
+export interface FormExposedActions {
+  submit(event?: React.FormEvent<HTMLFormElement>): void;
+  setFieldsValues(objectOfValues: { [key: string]: FieldValue }): void;
+  invalidateFields(objectOfErrors: { [key: string]: string }): void;
+  getFieldStepName(fieldName: string): null | string;
+  submitStep(event?: React.FormEvent<HTMLFormElement>): void;
+  goToStep(stepName: string): void;
+  nextStep(): void;
+  prevStep(): void;
+  reset(): void;
+}
+
+export interface FormInternalActions {
+  registerStep(name: string, step?: Partial<StepState>): void;
+  unregisterStep(name: string): void;
+  registerField(name: string, field?: Partial<FieldState>): void;
+  unregisterField(id: string): void;
+  updateField(id: string, field: Partial<FieldState>): void;
+}
+
 export type State = {
   form: FormState;
   steps: StepState[];
   fields: FieldState[];
-  actions: FormActions;
+  internalActions: FormInternalActions;
+  exposedActions: FormExposedActions;
 };

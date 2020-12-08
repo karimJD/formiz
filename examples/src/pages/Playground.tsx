@@ -8,6 +8,10 @@ import {
   FormErrorMessage,
   Input,
   Stack,
+  Box,
+  InputGroup,
+  InputRightElement,
+  Spinner,
 } from '@chakra-ui/react';
 
 import { PageHeader } from '../components/PageHeader';
@@ -28,19 +32,28 @@ const DebugRender = () => {
 };
 
 const Field = (props) => {
-  const { value, isValid, errorMessage, setValue } = useField(props);
-  const { label, name } = props;
+  const { id, value, isValid, isValidating, errorMessage, setValue } = useField(
+    props,
+  );
+  const { label } = props;
   return (
-    <FormControl id={name} isInvalid={!isValid}>
+    <FormControl id={id} isInvalid={!isValid}>
       <FormLabel>
         {label}
         <DebugRender />
       </FormLabel>
-      <Input
-        type="text"
-        value={value ?? ''}
-        onChange={(e) => setValue(e.target.value)}
-      />
+      <InputGroup>
+        <Input
+          type="text"
+          value={value ?? ''}
+          onChange={(e) => setValue(e.target.value)}
+        />
+        {isValidating && (
+          <InputRightElement>
+            <Spinner size="sm" flex="none" />
+          </InputRightElement>
+        )}
+      </InputGroup>
       <FormErrorMessage>{errorMessage}</FormErrorMessage>
     </FormControl>
   );
@@ -89,9 +102,46 @@ export const Playground = () => {
               },
             ]}
           />
-          <FormizStep name="step2">
-            <Field label="Lastname" name="lastname" />
+          <FormizStep
+            name="step2"
+            style={{
+              border: '1px dashed red',
+              padding: '40px',
+              position: 'relative',
+            }}
+          >
+            <DebugRender />
+            <Field
+              label="Lastname"
+              name="lastname"
+              validations={[
+                {
+                  rule: (value) => !!value,
+                  message: 'Required',
+                },
+              ]}
+            />
           </FormizStep>
+          <Box
+            as={FormizStep}
+            name="step3"
+            pos="relative"
+            p="40px"
+            border="1px dashed"
+            borderColor="red.500"
+          >
+            <DebugRender />
+            <Field
+              label="Other"
+              name="other"
+              validations={[
+                {
+                  rule: (value) => !!value,
+                  message: 'Required',
+                },
+              ]}
+            />
+          </Box>
           <pre>{JSON.stringify(state || {}, null, 2)}</pre>
           {[...Array(1)].map((_x, index) => (
             <Field

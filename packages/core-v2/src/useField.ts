@@ -33,8 +33,20 @@ export const useField = ({
     useCallback((state) => state.fields?.find((f) => f.name === name), [name]),
     shallow,
   );
+  const form = useStore(
+    useCallback(
+      ({ form: { id, isSubmitted, initialStepName, navigatedStepName } }) => ({
+        id,
+        isSubmitted,
+        initialStepName,
+        navigatedStepName,
+      }),
+      [],
+    ),
+    shallow,
+  );
   const { registerField, unregisterField, updateField } = useStore(
-    useCallback((state) => state.actions, []),
+    useCallback((state) => state.internalActions, []),
   );
 
   const fieldRef = useRef<FieldState>();
@@ -153,7 +165,7 @@ export const useField = ({
   );
 
   return {
-    ...getExposedField(field || getDefaultField(name)),
+    ...getExposedField(field || getDefaultField(name), form),
     setValue,
   };
 };

@@ -1,5 +1,18 @@
-import { Field, FieldState } from '../types';
+import { Field, FieldState, FormState, StepState } from '../types';
 import { getFieldHtmlUniqueId, getFieldUniqueId } from './ids.utils';
+
+export const getDefaultStep = (name: string): StepState => ({
+  name,
+  order: 0,
+  label: null,
+  isCurrent: false,
+  isValid: true,
+  isVisited: false,
+  isPristine: true,
+  isValidating: false,
+  isSubmitted: false,
+  isEnabled: true,
+});
 
 export const getDefaultField = (name: string): FieldState => ({
   id: getFieldUniqueId(),
@@ -12,17 +25,23 @@ export const getDefaultField = (name: string): FieldState => ({
   isPristine: true,
 });
 
-export const getExposedField = ({
-  name,
-  externalErrors,
-  asyncErrors,
-  errors,
-  isPristine,
-  isValidating,
-  // stepName,
-  // resetKey,
-  value,
-}: FieldState): Field => {
+export const getExposedField = (
+  {
+    name,
+    externalErrors,
+    asyncErrors,
+    errors,
+    isPristine,
+    isValidating,
+    // stepName,
+    // resetKey,
+    value,
+  }: FieldState,
+  form: Pick<
+    FormState,
+    'id' | 'isSubmitted' | 'navigatedStepName' | 'initialStepName'
+  >,
+): Field => {
   const allErrors = [...externalErrors, ...asyncErrors, ...errors];
   // const currentStepName =
   //   formState.navigatedStepName || formState.initialStepName;
@@ -33,7 +52,7 @@ export const getExposedField = ({
   //     ? currentStep.isSubmitted
   //     : formState.isSubmitted;
   return {
-    id: getFieldHtmlUniqueId(/*formState?.id ||*/ '', name),
+    id: getFieldHtmlUniqueId(form.id, name),
     errorMessage: allErrors[0],
     errorMessages: allErrors,
     isPristine,
