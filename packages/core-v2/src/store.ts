@@ -22,6 +22,7 @@ export const createStore = (id: string) =>
       isStepValidating: false,
       isStepSubmitted: false,
     },
+    steps: [],
     fields: [],
     actions: {
       registerField(name, defaultField) {

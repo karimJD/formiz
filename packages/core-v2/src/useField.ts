@@ -8,8 +8,9 @@ import {
   FieldProps,
   FieldValidationObject,
 } from './types';
-import { FormizContext } from './Formiz';
 import { getDefaultField, getExposedField } from './utils/form.utils';
+import { FormizContext } from './Formiz';
+import { FormizStepContext } from './FormizStep';
 
 export const useField = ({
   name,
@@ -17,13 +18,16 @@ export const useField = ({
   asyncValidations = [],
 }: FieldProps): UseFieldValues => {
   const isMountedRef = useRef(true);
-  const ctx = useContext(FormizContext);
+  const formizContext = useContext(FormizContext);
 
-  if (!ctx) {
+  if (!formizContext) {
     throw new Error('TODO');
   }
 
-  const { useStore } = ctx;
+  const { useStore } = formizContext;
+
+  const formizStepContext = useContext(FormizStepContext);
+  const stepName = formizStepContext?.name;
 
   const field = useStore(
     useCallback((state) => state.fields?.find((f) => f.name === name), [name]),
@@ -50,13 +54,13 @@ export const useField = ({
 
   // Register / Unregister Field
   useEffect(() => {
-    registerField(name);
+    registerField(name, { stepName });
     return () => {
       if (fieldRef.current?.id) {
         unregisterField(fieldRef.current.id);
       }
     };
-  }, [registerField, unregisterField, name]);
+  }, [registerField, unregisterField, name, stepName]);
 
   // Validations
   useEffect(

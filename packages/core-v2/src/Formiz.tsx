@@ -1,16 +1,16 @@
 import React, { useRef, useEffect } from 'react';
 import { getFormUniqueId } from './utils/ids.utils';
-import { FormizContextType, FormProps, State } from './types';
+import { FormizContextType, FormizProps, State } from './types';
 import { createStore } from './store';
 import { UseStore } from 'zustand';
 
 export const FormizContext = React.createContext<FormizContextType>(null);
 
-export const Formiz = ({
+export const Formiz: React.FC<FormizProps> = ({
   children = null,
   connect,
   id = getFormUniqueId(),
-}: FormProps) => {
+}) => {
   const useStoreRef = useRef<UseStore<State>>();
   if (!useStoreRef.current) {
     useStoreRef.current = createStore(id);

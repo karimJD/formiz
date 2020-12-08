@@ -1,6 +1,6 @@
 import React, { useLayoutEffect, useRef } from 'react';
 
-import { Formiz, useForm, useField } from '@formiz/core-v2';
+import { Formiz, FormizStep, useForm, useField } from '@formiz/core-v2';
 import {
   Code,
   FormControl,
@@ -89,7 +89,9 @@ export const Playground = () => {
               },
             ]}
           />
-          <Field label="Lastname" name="lastname" />
+          <FormizStep name="step2">
+            <Field label="Lastname" name="lastname" />
+          </FormizStep>
           <pre>{JSON.stringify(state || {}, null, 2)}</pre>
           {[...Array(1)].map((_x, index) => (
             <Field

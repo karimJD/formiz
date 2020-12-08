@@ -37,6 +37,7 @@ export interface FieldState {
   externalErrors: FieldErrors;
   isValidating: boolean;
   isPristine: boolean;
+  stepName?: string;
 }
 
 export interface Field {
@@ -56,26 +57,54 @@ export interface UseFieldValues extends Field {
   otherProps?: any;
 }
 
-export interface FormProps {
+export interface FormState {
+  id: string;
+  resetKey: number;
+  isValid: boolean;
+  isValidating: boolean;
+  isSubmitted: boolean;
+  isStepValid: boolean;
+  isStepValidating: boolean;
+  isStepSubmitted: boolean;
+}
+export interface StepState {
+  name: string;
+  label?: React.ReactNode;
+  order: number;
+  isCurrent: boolean;
+  isValid: boolean;
+  isVisited: boolean;
+  isPristine: boolean;
+  isValidating: boolean;
+  isSubmitted: boolean;
+  isEnabled: boolean;
+}
+
+export interface FormActions {
+  registerField(name: string, defaultField?: Partial<FieldState>): void;
+  unregisterField(id: string): void;
+  updateField(id: string, field: Partial<FieldState>): void;
+}
+
+export interface FormizStepProps {
+  as?: any;
+  name: string;
+  label?: string;
+  children?: ReactNode;
+  isEnabled?: boolean;
+  order?: number;
+  style?: object;
+}
+
+export interface FormizProps {
   children?: ReactNode;
   connect?(store: any): void;
   id?: string;
 }
+
 export type State = {
-  form: {
-    id: string;
-    resetKey: number;
-    isValid: boolean;
-    isValidating: boolean;
-    isSubmitted: boolean;
-    isStepValid: boolean;
-    isStepValidating: boolean;
-    isStepSubmitted: boolean;
-  };
+  form: FormState;
+  steps: StepState[];
   fields: FieldState[];
-  actions: {
-    registerField(name: string, defaultField?: Partial<FieldState>): void;
-    unregisterField(id: string): void;
-    updateField(id: string, field: Partial<FieldState>): void;
-  };
+  actions: FormActions;
 };

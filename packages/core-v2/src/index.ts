@@ -1,13 +1,14 @@
 export { Formiz } from './Formiz';
-export const FormizStep = 'TODO';
+export { FormizStep } from './FormizStep';
 export { useForm } from './useForm';
 export { useField } from './useField';
 
-export const FieldProps = 'TODO';
-export const Field = 'TODO';
+export { Field } from './types';
 
-export const StepProps = 'TODO';
+export const FieldProps = 'TODO';
+
+export const FormizStepProps = 'TODO';
 export const Step = 'TODO';
 
-export const FormProps = 'TODO';
+export const FormizProps = 'TODO';
 export const Form = 'TODO';
