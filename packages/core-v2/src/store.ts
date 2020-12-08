@@ -1,15 +1,14 @@
 import create from 'zustand';
-import { Field, State } from './types';
-import { getFieldUniqueId } from './utils/ids.utils';
+import { FieldState, State } from './types';
+import { getDefaultField } from './utils/form.utils';
 
-const getDefaultField = (name: string): Field => ({
-  id: getFieldUniqueId(),
-  name,
-  value: null,
-  errors: [],
-  asyncErrors: [],
-  isValidating: false,
-});
+const isFormValid = (fields: FieldState[]): boolean =>
+  fields.every(
+    (field) =>
+      !field?.errors?.length &&
+      !field?.asyncErrors?.length &&
+      !field?.externalErrors?.length,
+  );
 
 export const createStore = (id: string) =>
   create<State>((set, get) => ({
@@ -36,7 +35,7 @@ export const createStore = (id: string) =>
           ];
           const form = {
             ...state.form,
-            isValid: fields.every((f) => !!f.value),
+            isValid: isFormValid(fields),
           };
           return {
             form,
@@ -49,7 +48,7 @@ export const createStore = (id: string) =>
           const fields = state.fields.filter((f) => f.id !== id);
           const form = {
             ...state.form,
-            isValid: fields.every((f) => !!f.value),
+            isValid: isFormValid(fields),
           };
           return {
             form,
@@ -75,7 +74,7 @@ export const createStore = (id: string) =>
           ];
           const form = {
             ...state.form,
-            isValid: fields.every((f) => !!f.value),
+            isValid: isFormValid(fields),
           };
           return {
             form,

@@ -1,20 +1,22 @@
 import { useCallback, useContext, useEffect, useRef } from 'react';
 import shallow from 'zustand/shallow';
 import {
-  Field,
+  UseFieldValues,
+  FieldState,
   FieldErrors,
   FieldAsyncValidationObject,
   FieldProps,
   FieldValidationObject,
 } from './types';
 import { FormizContext } from './Formiz';
+import { getDefaultField, getExposedField } from './utils/form.utils';
 
 export const useField = ({
   name,
   debounce = 0,
   validations = [],
   asyncValidations = [],
-}: FieldProps) => {
+}: FieldProps): UseFieldValues => {
   const isMountedRef = useRef(true);
   const ctx = useContext(FormizContext);
 
@@ -32,7 +34,7 @@ export const useField = ({
     useCallback((state) => state.actions, []),
   );
 
-  const fieldRef = useRef<Field>();
+  const fieldRef = useRef<FieldState>();
   fieldRef.current = field;
   const debounceRef = useRef<number>();
   debounceRef.current = debounce;
@@ -158,5 +160,8 @@ export const useField = ({
     [],
   );
 
-  return { ...(field || {}), value: field?.value, setValue };
+  return {
+    ...getExposedField(field || getDefaultField(name)),
+    setValue,
+  };
 };

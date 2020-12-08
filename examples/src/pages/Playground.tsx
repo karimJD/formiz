@@ -1,7 +1,14 @@
 import React, { useLayoutEffect, useRef } from 'react';
 
 import { Formiz, useForm, useField } from '@formiz/core-v2';
-import { Code, FormControl, FormLabel, Input, Stack } from '@chakra-ui/react';
+import {
+  Code,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  Input,
+  Stack,
+} from '@chakra-ui/react';
 
 import { PageHeader } from '../components/PageHeader';
 import { PageLayout } from '../layout/PageLayout';
@@ -21,10 +28,10 @@ const DebugRender = () => {
 };
 
 const Field = (props) => {
-  const { value, setValue } = useField(props);
+  const { value, isValid, errorMessage, setValue } = useField(props);
   const { label, name } = props;
   return (
-    <FormControl id={name}>
+    <FormControl id={name} isInvalid={!isValid}>
       <FormLabel>
         {label}
         <DebugRender />
@@ -34,6 +41,7 @@ const Field = (props) => {
         value={value ?? ''}
         onChange={(e) => setValue(e.target.value)}
       />
+      <FormErrorMessage>{errorMessage}</FormErrorMessage>
     </FormControl>
   );
 };

@@ -28,13 +28,31 @@ export interface FieldProps {
   asyncValidations?: FieldAsyncValidationObject[];
 }
 
-export interface Field {
+export interface FieldState {
   id: string;
   name: string;
   value: FieldValue;
   errors: FieldErrors;
   asyncErrors: FieldErrors;
+  externalErrors: FieldErrors;
   isValidating: boolean;
+}
+
+export interface Field {
+  errorMessage?: string | undefined;
+  errorMessages?: (string | undefined)[];
+  // isPristine: boolean;
+  isValid: boolean;
+  isValidating: boolean;
+  // isSubmitted: boolean;
+  value: FieldValue;
+  // resetKey: number;
+  id: string;
+}
+
+export interface UseFieldValues extends Field {
+  setValue(value: FieldValue): void;
+  otherProps?: any;
 }
 
 export interface FormProps {
@@ -53,10 +71,10 @@ export type State = {
     isStepValidating: boolean;
     isStepSubmitted: boolean;
   };
-  fields: Field[];
+  fields: FieldState[];
   actions: {
-    registerField(name: string, defaultField?: Partial<Field>): void;
+    registerField(name: string, defaultField?: Partial<FieldState>): void;
     unregisterField(id: string): void;
-    updateField(id: string, field: Partial<Field>): void;
+    updateField(id: string, field: Partial<FieldState>): void;
   };
 };
