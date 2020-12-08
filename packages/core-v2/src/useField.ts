@@ -13,7 +13,6 @@ import { getDefaultField, getExposedField } from './utils/form.utils';
 
 export const useField = ({
   name,
-  debounce = 0,
   validations = [],
   asyncValidations = [],
 }: FieldProps): UseFieldValues => {
@@ -36,8 +35,6 @@ export const useField = ({
 
   const fieldRef = useRef<FieldState>();
   fieldRef.current = field;
-  const debounceRef = useRef<number>();
-  debounceRef.current = debounce;
   const validationsRef = useRef<FieldValidationObject[]>();
   validationsRef.current = validations;
   const asyncValidationsRef = useRef<FieldAsyncValidationObject[]>();
@@ -46,8 +43,7 @@ export const useField = ({
   const setValue = useCallback(
     (newValue) => {
       if (!field?.id) return;
-      console.log('setValue');
-      updateField(field.id, { name, value: newValue });
+      updateField(field.id, { name, value: newValue, isPristine: false });
     },
     [field?.id, name, updateField],
   );
@@ -129,15 +125,7 @@ export const useField = ({
         });
       };
 
-      if (!debounceRef.current) {
-        validateField();
-        return () => {};
-      }
-
-      const timer = setTimeout(() => {
-        validateField();
-      }, debounceRef.current);
-      return () => clearTimeout(timer);
+      validateField();
     },
     /* eslint-disable react-hooks/exhaustive-deps */
     [

@@ -6,7 +6,8 @@ export type FormizContextType = {
 } | null;
 
 export type FieldValue = any;
-export type FieldErrors = (string | undefined)[];
+export type FieldError = string | undefined;
+export type FieldErrors = FieldError[];
 export interface FieldValidationObject {
   rule(value: FieldValue): boolean;
   message?: string;
@@ -19,7 +20,6 @@ export interface FieldAsyncValidationObject {
 }
 export interface FieldProps {
   name: string;
-  debounce?: number;
   defaultValue?: FieldValue;
   formatValue?(value: FieldValue): FieldValue;
   onChange?(value?: FieldValue, rawValue?: FieldValue): void;
@@ -36,12 +36,13 @@ export interface FieldState {
   asyncErrors: FieldErrors;
   externalErrors: FieldErrors;
   isValidating: boolean;
+  isPristine: boolean;
 }
 
 export interface Field {
-  errorMessage?: string | undefined;
-  errorMessages?: (string | undefined)[];
-  // isPristine: boolean;
+  errorMessage?: FieldError;
+  errorMessages?: FieldErrors;
+  isPristine: boolean;
   isValid: boolean;
   isValidating: boolean;
   // isSubmitted: boolean;

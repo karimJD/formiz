@@ -96,6 +96,12 @@ export const Playground = () => {
               key={index}
               label={`Email ${index + 1}`}
               name={`user[${index}].email`}
+              validations={[
+                {
+                  rule: (value) => !!value,
+                  message: 'Required',
+                },
+              ]}
             />
           ))}
         </Stack>

@@ -9,20 +9,21 @@ export const getDefaultField = (name: string): FieldState => ({
   asyncErrors: [],
   externalErrors: [],
   isValidating: false,
+  isPristine: true,
 });
 
 export const getExposedField = ({
   name,
-  // externalErrors,
+  externalErrors,
   asyncErrors,
   errors,
-  // isPristine,
+  isPristine,
   isValidating,
   // stepName,
   // resetKey,
   value,
 }: FieldState): Field => {
-  const allErrors = [/*...externalErrors,*/ ...asyncErrors, ...errors];
+  const allErrors = [...externalErrors, ...asyncErrors, ...errors];
   // const currentStepName =
   //   formState.navigatedStepName || formState.initialStepName;
   // const currentStep: StepState | null =
@@ -35,7 +36,7 @@ export const getExposedField = ({
     id: getFieldHtmlUniqueId(/*formState?.id ||*/ '', name),
     errorMessage: allErrors[0],
     errorMessages: allErrors,
-    // isPristine,
+    isPristine,
     isValid: !allErrors.length,
     isValidating,
     // isSubmitted,
