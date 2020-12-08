@@ -1,15 +1,7 @@
 import React, { useLayoutEffect, useRef } from 'react';
 
 import { Formiz, useForm, useField } from '@formiz/core-v2';
-import {
-  Box,
-  Code,
-  Divider,
-  FormControl,
-  FormLabel,
-  Input,
-  Stack,
-} from '@chakra-ui/react';
+import { Code, FormControl, FormLabel, Input, Stack } from '@chakra-ui/react';
 
 import { PageHeader } from '../components/PageHeader';
 import { PageLayout } from '../layout/PageLayout';
@@ -46,17 +38,17 @@ const Field = (props) => {
   );
 };
 
-const DebugState = () => {
-  const { state } = useForm((s) => s);
-  return (
-    <>
-      <Box as="pre" position="relative">
-        <DebugRender />
-        {JSON.stringify(state || {}, null, 2)}
-      </Box>
-    </>
-  );
-};
+// const DebugState = () => {
+//   const { state } = useForm((s) => s);
+//   return (
+//     <>
+//       <Box as="pre" position="relative">
+//         <DebugRender />
+//         {JSON.stringify(state || {}, null, 2)}
+//       </Box>
+//     </>
+//   );
+// };
 
 export const Playground = () => {
   const { connect, state } = useForm((s) => s.form);
@@ -68,7 +60,27 @@ export const Playground = () => {
           <DebugRender />
         </PageHeader>
         <Stack spacing="6">
-          <Field label="Firstname" name="firstname" />
+          <Field
+            label="Firstname"
+            name="firstname"
+            validations={[
+              {
+                rule: (value) => !!value,
+                message: 'Required',
+              },
+            ]}
+            asyncValidations={[
+              {
+                rule: async (value) =>
+                  new Promise((r) =>
+                    setTimeout(() => {
+                      r(value === 'yes');
+                    }, 2000),
+                  ),
+                message: 'Async Required',
+              },
+            ]}
+          />
           <Field label="Lastname" name="lastname" />
           <pre>{JSON.stringify(state || {}, null, 2)}</pre>
           {[...Array(1)].map((_x, index) => (

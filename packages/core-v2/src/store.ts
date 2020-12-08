@@ -1,6 +1,15 @@
 import create from 'zustand';
 import { Field, State } from './types';
-import { getFieldUniqueId } from './utils/ids';
+import { getFieldUniqueId } from './utils/ids.utils';
+
+const getDefaultField = (name: string): Field => ({
+  id: getFieldUniqueId(),
+  name,
+  value: null,
+  errors: [],
+  asyncErrors: [],
+  isValidating: false,
+});
 
 export const createStore = (id: string) =>
   create<State>((set, get) => ({
@@ -16,19 +25,18 @@ export const createStore = (id: string) =>
     },
     fields: [],
     actions: {
-      registerField(name: string) {
+      registerField(name, defaultField) {
         set((state) => {
           const fields = [
             ...state.fields,
             {
-              id: getFieldUniqueId(),
-              name,
-              value: '',
+              ...getDefaultField(name),
+              ...(defaultField || {}),
             },
           ];
           const form = {
             ...state.form,
-            isValid: fields.every((f: Field) => !!f.value),
+            isValid: fields.every((f) => !!f.value),
           };
           return {
             form,
@@ -36,12 +44,12 @@ export const createStore = (id: string) =>
           };
         });
       },
-      unregisterField(id: string) {
+      unregisterField(id) {
         set((state) => {
-          const fields = state.fields.filter((f: Field) => f.id !== id);
+          const fields = state.fields.filter((f) => f.id !== id);
           const form = {
             ...state.form,
-            isValid: fields.every((f: Field) => !!f.value),
+            isValid: fields.every((f) => !!f.value),
           };
           return {
             form,
@@ -49,17 +57,25 @@ export const createStore = (id: string) =>
           };
         });
       },
-      updateField(field: Field) {
+      updateField(id, field) {
         set((state) => {
-          const oldField =
-            state.fields.find((f: Field) => f.id === field.id) || {};
-          const otherFields = state.fields.filter(
-            (f: Field) => f.id !== field.id,
-          );
-          const fields = [...otherFields, { ...oldField, ...field }];
+          if (!id) return {};
+
+          const oldField = state.fields.find((f) => f.id === id);
+
+          if (!oldField) return {};
+
+          const otherFields = state.fields.filter((f) => f.id !== id);
+          const fields = [
+            ...otherFields,
+            {
+              ...(oldField || {}),
+              ...field,
+            },
+          ];
           const form = {
             ...state.form,
-            isValid: fields.every((f: Field) => !!f.value),
+            isValid: fields.every((f) => !!f.value),
           };
           return {
             form,
