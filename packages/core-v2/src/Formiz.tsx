@@ -25,7 +25,7 @@ export const Formiz: React.FC<FormizProps> = ({
 
   if (!useStoreRef.current) {
     useStoreRef.current = createStore({
-      id,
+      formId: id,
       onSubmitRef,
       onValidSubmitRef,
       onInvalidSubmitRef,

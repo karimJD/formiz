@@ -42,7 +42,7 @@ export interface Field {
   isPristine: boolean;
   isValid: boolean;
   isValidating: boolean;
-  // isSubmitted: boolean;
+  isSubmitted: boolean;
   value: FieldValue;
   // resetKey: number;
   id: string;
@@ -114,6 +114,7 @@ export interface FormExposedActions {
 export interface FormInternalActions {
   registerStep(name: string, step?: Partial<StepState>): void;
   unregisterStep(name: string): void;
+  updateStep(name: string, step?: Partial<StepState>): void;
   registerField(name: string, field?: Partial<FieldState>): void;
   unregisterField(id: string): void;
   updateField(id: string, field: Partial<FieldState>): void;

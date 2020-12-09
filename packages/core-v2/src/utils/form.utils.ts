@@ -33,7 +33,7 @@ export const getExposedField = (
     errors,
     isPristine,
     isValidating,
-    // stepName,
+    stepName,
     // resetKey,
     value,
   }: FieldState,
@@ -41,16 +41,15 @@ export const getExposedField = (
     FormState,
     'id' | 'isSubmitted' | 'navigatedStepName' | 'initialStepName'
   >,
+  steps: Pick<StepState, 'name' | 'isSubmitted'>[],
 ): Field => {
   const allErrors = [...externalErrors, ...asyncErrors, ...errors];
-  // const currentStepName =
-  //   formState.navigatedStepName || formState.initialStepName;
-  // const currentStep: StepState | null =
-  //   formState.steps.find((x) => x.name === currentStepName) || null;
-  // const isSubmitted =
-  //   stepName && currentStep && currentStepName === stepName
-  //     ? currentStep.isSubmitted
-  //     : formState.isSubmitted;
+  const currentStepName = form.navigatedStepName || form.initialStepName;
+  const currentStep = steps.find((x) => x.name === currentStepName);
+  const isSubmitted =
+    stepName && currentStep && currentStepName === stepName
+      ? currentStep.isSubmitted
+      : form.isSubmitted;
   return {
     id: getFieldHtmlUniqueId(form.id, name),
     errorMessage: allErrors[0],
@@ -58,7 +57,7 @@ export const getExposedField = (
     isPristine,
     isValid: !allErrors.length,
     isValidating,
-    // isSubmitted,
+    isSubmitted,
     value,
     // resetKey,
   };

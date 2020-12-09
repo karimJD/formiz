@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef } from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 
 import { Formiz, FormizStep, useForm, useField } from '@formiz/core-v2';
 import {
@@ -33,12 +33,18 @@ const DebugRender = () => {
 };
 
 const Field = (props) => {
-  const { id, value, isValid, isValidating, errorMessage, setValue } = useField(
-    props,
-  );
+  const {
+    id,
+    value,
+    isValid,
+    isValidating,
+    isSubmitted,
+    errorMessage,
+    setValue,
+  } = useField(props);
   const { label } = props;
   return (
-    <FormControl id={id} isInvalid={!isValid}>
+    <FormControl id={id} isInvalid={!isValid && isSubmitted}>
       <FormLabel>
         {label}
         <DebugRender />
@@ -73,6 +79,7 @@ const Field = (props) => {
 // };
 
 export const Playground = () => {
+  const [showStep, setShowStep] = useState(true);
   const { connect, submit, state } = useForm((s) => s.form);
   const handleSubmit = (...args) => {
     console.log(...args);
@@ -85,6 +92,7 @@ export const Playground = () => {
           <DebugRender />
         </PageHeader>
         <form onSubmit={submit}>
+          <Button onClick={() => setShowStep((x) => !x)}>Toggle step</Button>
           <Stack spacing="6">
             <Field
               label="Firstname"
@@ -130,6 +138,7 @@ export const Playground = () => {
             <Box
               as={FormizStep}
               name="step3"
+              isEnabled={showStep}
               pos="relative"
               p="40px"
               border="1px dashed"

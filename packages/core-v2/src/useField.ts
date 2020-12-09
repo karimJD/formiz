@@ -45,6 +45,17 @@ export const useField = ({
     ),
     shallow,
   );
+  const steps = useStore(
+    useCallback(
+      ({ steps }) =>
+        steps.map((step) => ({
+          name: step.name,
+          isSubmitted: step.isSubmitted,
+        })),
+      [],
+    ),
+    shallow,
+  );
   const { registerField, unregisterField, updateField } = useStore(
     useCallback((state) => state.internalActions, []),
   );
@@ -165,7 +176,7 @@ export const useField = ({
   );
 
   return {
-    ...getExposedField(field || getDefaultField(name), form),
+    ...getExposedField(field || getDefaultField(name), form, steps),
     setValue,
   };
 };

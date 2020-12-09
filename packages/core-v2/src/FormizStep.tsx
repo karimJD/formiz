@@ -1,4 +1,5 @@
 import React, { useCallback, useContext, useEffect } from 'react';
+import { useRef } from 'react';
 import { FormizContext } from './Formiz';
 import { FormizStepProps } from './types';
 
@@ -15,13 +16,15 @@ export const FormizStep: React.FC<FormizStepProps> = ({
   ...rest
 }) => {
   const formizContext = useContext(FormizContext);
+  const nameRef = useRef<string>(name);
+  nameRef.current = name;
 
   if (!formizContext) {
     throw new Error('TODO');
   }
 
   const { useStore } = formizContext;
-  const { registerStep, unregisterStep } = useStore(
+  const { registerStep, unregisterStep, updateStep } = useStore(
     useCallback((state) => state.internalActions, []),
   );
   const isActive = true;
@@ -33,6 +36,10 @@ export const FormizStep: React.FC<FormizStepProps> = ({
       unregisterStep(name);
     };
   }, [registerStep, unregisterStep, name]);
+
+  useEffect(() => {
+    updateStep(nameRef.current, { isEnabled, label, order });
+  }, [updateStep, isEnabled, label, order]);
 
   return (
     <FormizStepContext.Provider

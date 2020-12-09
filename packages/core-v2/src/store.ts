@@ -12,19 +12,19 @@ const isFormValid = (fields: FieldState[]): boolean =>
   );
 
 export const createStore = ({
-  id,
+  formId,
   onSubmitRef,
   onValidSubmitRef,
   onInvalidSubmitRef,
 }: {
-  id: string;
+  formId: string;
   onSubmitRef: RefObject<FormizProps['onSubmit']>;
   onValidSubmitRef: RefObject<FormizProps['onValidSubmit']>;
   onInvalidSubmitRef: RefObject<FormizProps['onInvalidSubmit']>;
 }) =>
   create<State>((set, get) => ({
     form: {
-      id,
+      id: formId,
       resetKey: 0,
       isValid: true,
       isValidating: false,
@@ -35,7 +35,7 @@ export const createStore = ({
     steps: [],
     fields: [],
     internalActions: {
-      registerStep: (name, step) => {
+      registerStep: (name, step = {}) => {
         set((state) => {
           const steps = [
             ...state.steps,
@@ -44,8 +44,23 @@ export const createStore = ({
               ...step,
             },
           ];
+
+          const orderedSteps = steps.sort((a, b) => a.order - b.order);
+          const enabledSteps = orderedSteps.filter(
+            ({ isEnabled }) => isEnabled,
+          );
+
+          const initialStepName = enabledSteps.length
+            ? enabledSteps[0].name
+            : null;
+
+          const form = {
+            ...state.form,
+            initialStepName,
+          };
           return {
-            steps,
+            form,
+            steps: orderedSteps,
           };
         });
       },
@@ -57,7 +72,39 @@ export const createStore = ({
           };
         });
       },
-      registerField: (name, field) => {
+      updateStep: (name, step = {}) => {
+        set((state) => {
+          const stepIndex = state.steps.findIndex((f) => f.name === name);
+          const oldStep = state.steps[stepIndex];
+
+          if (!oldStep) return {};
+
+          const steps = [...state.steps];
+          steps[stepIndex] = {
+            ...oldStep,
+            ...step,
+          };
+
+          const orderedSteps = steps.sort((a, b) => a.order - b.order);
+          const enabledSteps = orderedSteps.filter(
+            ({ isEnabled }) => isEnabled,
+          );
+
+          const initialStepName = enabledSteps.length
+            ? enabledSteps[0].name
+            : null;
+
+          const form = {
+            ...state.form,
+            initialStepName,
+          };
+          return {
+            form,
+            steps: orderedSteps,
+          };
+        });
+      },
+      registerField: (name, field = {}) => {
         set((state) => {
           const fields = [
             ...state.fields,
@@ -89,10 +136,8 @@ export const createStore = ({
           };
         });
       },
-      updateField: (id, field) => {
+      updateField: (id, field = {}) => {
         set((state) => {
-          if (!id) return {};
-
           const oldField = state.fields.find((f) => f.id === id);
 
           if (!oldField) return {};
@@ -101,7 +146,7 @@ export const createStore = ({
           const fields = [
             ...otherFields,
             {
-              ...(oldField || {}),
+              ...oldField,
               ...field,
             },
           ];
@@ -133,15 +178,15 @@ export const createStore = ({
         });
 
         if (get().form.isValid && onValidSubmitRef.current) {
-          onValidSubmitRef.current({ demo: 'test' });
+          onValidSubmitRef.current({ demo: 'test' }); // TODO values
         }
 
         if (!get().form.isValid && onInvalidSubmitRef.current) {
-          onInvalidSubmitRef.current({ demo: 'test' });
+          onInvalidSubmitRef.current({ demo: 'test' }); // TODO values
         }
 
         if (onSubmitRef.current) {
-          onSubmitRef.current({ demo: 'test' });
+          onSubmitRef.current({ demo: 'test' }); // TODO values
         }
       },
       setFieldsValues: (objectOfValues) => {},
