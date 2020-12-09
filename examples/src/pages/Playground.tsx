@@ -78,7 +78,7 @@ export const Playground = () => {
     console.log(...args);
   };
   return (
-    <Formiz connect={connect} onSubmit={handleSubmit}>
+    <Formiz connect={connect} onValidSubmit={handleSubmit}>
       <PageLayout v2>
         <PageHeader githubPath="Playground.js">
           Playground

@@ -1,10 +1,6 @@
 import { ReactNode } from 'react';
 import { UseStore } from 'zustand';
 
-export type FormizContextType = {
-  useStore: UseStore<State>;
-} | null;
-
 export type FieldValue = any;
 export type FieldError = string | undefined;
 export type FieldErrors = FieldError[];
@@ -95,10 +91,10 @@ export interface FormizProps {
   connect?(store: any): void;
   initialValues?: object;
   id?: string;
-  onChange?(values?: object): void;
-  onSubmit?(values?: object): void;
-  onValidSubmit?(values?: object): void;
-  onInvalidSubmit?(values?: object): void;
+  onChange?(values: object): void;
+  onSubmit?(values: object): void;
+  onValidSubmit?(values: object): void;
+  onInvalidSubmit?(values: object): void;
   onValid?(): void;
   onInvalid?(): void;
 }
@@ -130,3 +126,7 @@ export type State = {
   internalActions: FormInternalActions;
   exposedActions: FormExposedActions;
 };
+
+export type FormizContextType = {
+  useStore: UseStore<State>;
+} | null;

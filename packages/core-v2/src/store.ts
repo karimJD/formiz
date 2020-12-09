@@ -14,9 +14,13 @@ const isFormValid = (fields: FieldState[]): boolean =>
 export const createStore = ({
   id,
   onSubmitRef,
+  onValidSubmitRef,
+  onInvalidSubmitRef,
 }: {
   id: string;
   onSubmitRef: RefObject<FormizProps['onSubmit']>;
+  onValidSubmitRef: RefObject<FormizProps['onValidSubmit']>;
+  onInvalidSubmitRef: RefObject<FormizProps['onInvalidSubmit']>;
 }) =>
   create<State>((set, get) => ({
     form: {
@@ -116,29 +120,29 @@ export const createStore = ({
       submit: (event) => {
         if (event) event.preventDefault();
 
+        set((state) => {
+          const form = { ...state.form, isSubmitted: true };
+          const steps = state.steps.map((step) => ({
+            ...step,
+            isSubmitted: true,
+          }));
+          return {
+            form,
+            steps,
+          };
+        });
+
+        if (get().form.isValid && onValidSubmitRef.current) {
+          onValidSubmitRef.current({ demo: 'test' });
+        }
+
+        if (!get().form.isValid && onInvalidSubmitRef.current) {
+          onInvalidSubmitRef.current({ demo: 'test' });
+        }
+
         if (onSubmitRef.current) {
           onSubmitRef.current({ demo: 'test' });
         }
-
-        // const { steps } = formStateRef.current;
-        // updateFormState({
-        //   isSubmitted: true,
-        //   steps: steps.map((step) => ({ ...step, isSubmitted: true })),
-        // });
-
-        // const formattedValues = getFormValues(fieldsRef.current);
-
-        // if (formStateRef.current.isValidating) {
-        //   return;
-        // }
-
-        // if (formStateRef.current.isValid) {
-        //   onValidSubmitRef.current(formattedValues);
-        // } else {
-        //   onInvalidSubmitRef.current(formattedValues);
-        // }
-
-        // onSubmitRef.current(formattedValues);
       },
       setFieldsValues: (objectOfValues) => {},
       invalidateFields: (objectOfErrors) => {},
