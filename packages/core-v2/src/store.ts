@@ -1,6 +1,6 @@
 import { RefObject } from 'react';
 import create from 'zustand';
-import { FieldState, FormizProps, State, StepState } from './types';
+import { FieldState, FormizProps, FormState, State, StepState } from './types';
 import { getDefaultField, getDefaultStep } from './utils/form.utils';
 
 const checkIsValid = (fields: FieldState[]): boolean =>
@@ -17,28 +17,49 @@ const checkIsPristine = (fields: FieldState[]): boolean =>
 const checkIsValidating = (fields: FieldState[]): boolean =>
   fields.some((field) => field.isValidating);
 
-const checkForm = (state: State): Partial<State> => {
-  const form = {
+const checkForm = (state: State): FormState => {
+  return {
     ...state.form,
     isValid: checkIsValid(state.fields),
     isPristine: checkIsPristine(state.fields),
     isValidating: checkIsValidating(state.fields),
   };
+};
+
+const checkSteps = (state: State): StepState[] => {
   const steps = state.steps.map((step) => {
     const stepFields = state.fields.filter(
       (field) => field.stepName === step.name,
     );
+    const isActive = state.form.navigatedStepName
+      ? state.form.navigatedStepName === step.name
+      : state.form.initialStepName === step.name;
     return {
       ...step,
       isValid: checkIsValid(stepFields),
       isPristine: checkIsPristine(stepFields),
       isValidating: checkIsValidating(stepFields),
+      isActive,
     };
   });
+  return steps;
+};
+
+const checkState = (state: State): State => {
+  const orderedSteps = state.steps.sort((a, b) => a.order - b.order);
+  const enabledSteps = orderedSteps.filter(({ isEnabled }) => isEnabled);
+
+  const initialStepName = enabledSteps.length ? enabledSteps[0].name : null;
+
+  const form = {
+    ...state.form,
+    initialStepName,
+  };
+
   return {
     ...state,
-    form,
-    steps,
+    form: checkForm({ ...state, form }),
+    steps: checkSteps(state),
   };
 };
 
@@ -68,19 +89,10 @@ const getStateWithStep = (
     };
   }
 
-  const orderedSteps = steps.sort((a, b) => a.order - b.order);
-  const enabledSteps = orderedSteps.filter(({ isEnabled }) => isEnabled);
-
-  const initialStepName = enabledSteps.length ? enabledSteps[0].name : null;
-
-  const form = {
-    ...state.form,
-    initialStepName,
-  };
-  return {
-    form,
-    steps: orderedSteps,
-  };
+  return checkState({
+    ...state,
+    steps,
+  });
 };
 
 export const createStore = ({
@@ -101,6 +113,7 @@ export const createStore = ({
       isValid: true,
       isValidating: false,
       isSubmitted: false,
+      isPristine: true,
       initialStepName: null,
       navigatedStepName: null,
     },
@@ -140,13 +153,19 @@ export const createStore = ({
               ...(field || {}),
             },
           ];
-          return checkForm({ ...state, fields });
+          return checkState({
+            ...state,
+            fields,
+          });
         });
       },
       unregisterField: (id) => {
         set((state) => {
           const fields = state.fields.filter((f) => f.id !== id);
-          return checkForm({ ...state, fields });
+          return checkState({
+            ...state,
+            fields,
+          });
         });
       },
       updateField: (id, field = {}) => {
@@ -163,7 +182,10 @@ export const createStore = ({
               ...field,
             },
           ];
-          return checkForm({ ...state, fields });
+          return checkState({
+            ...state,
+            fields,
+          });
         });
       },
     },
@@ -199,9 +221,36 @@ export const createStore = ({
       invalidateFields: (objectOfErrors) => {},
       getFieldStepName: (fieldName) => null,
       submitStep: (event) => {},
-      goToStep: (stepName) => {},
-      nextStep: () => {},
-      prevStep: () => {},
+      goToStep: (stepName) => {
+        set((state) => {
+          if (!stepName) return {};
+
+          const targetedStepName = state.steps
+            .filter(({ isEnabled }) => isEnabled)
+            .find(({ name }) => name === stepName)?.name;
+
+          if (!targetedStepName) return {};
+
+          const form = {
+            ...state.form,
+            navigatedStepName: targetedStepName,
+          };
+
+          return checkState({ ...state, form });
+        });
+      },
+      nextStep: () => {
+        const state = get();
+        const enabledSteps = state.steps.filter((x) => x.isEnabled);
+        const stepIndex = enabledSteps.findIndex((step) => step.isActive);
+        state.exposedActions.goToStep(enabledSteps[stepIndex + 1]?.name);
+      },
+      prevStep: () => {
+        const state = get();
+        const enabledSteps = state.steps.filter((x) => x.isEnabled);
+        const stepIndex = enabledSteps.findIndex((step) => step.isActive);
+        state.exposedActions.goToStep(enabledSteps[stepIndex - 1]?.name);
+      },
       reset: () => {},
     },
   }));

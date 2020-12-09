@@ -59,6 +59,7 @@ export interface FormState {
   isValid: boolean;
   isValidating: boolean;
   isSubmitted: boolean;
+  isPristine: boolean;
   initialStepName: string | null;
   navigatedStepName: string | null;
 }
