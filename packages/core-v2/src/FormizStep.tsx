@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useEffect, useRef } from 'react';
 import shallow from 'zustand/shallow';
 import { FormizContext } from './Formiz';
-import { FormizStepProps, FormStateInStep, StepStateInStep } from './types';
+import { FormizStepProps, StepStateInStep } from './types';
 
 export const FormizStepContext = React.createContext<any>({});
 
@@ -26,16 +26,6 @@ export const FormizStep: React.FC<FormizStepProps> = ({
   const { useStore } = formizContext;
   const { registerStep, unregisterStep, updateStep } = useStore(
     useCallback((state) => state.internalActions, []),
-  );
-  const form = useStore<FormStateInStep>(
-    useCallback(
-      ({ form: { initialStepName, navigatedStepName } }): FormStateInStep => ({
-        initialStepName,
-        navigatedStepName,
-      }),
-      [],
-    ),
-    shallow,
   );
   const step = useStore<StepStateInStep>(
     useCallback(

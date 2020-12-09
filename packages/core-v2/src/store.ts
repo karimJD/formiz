@@ -1,6 +1,6 @@
 import { RefObject } from 'react';
 import create from 'zustand';
-import { FieldState, FormizProps, State } from './types';
+import { FieldState, FormizProps, State, StepState } from './types';
 import { getDefaultField, getDefaultStep } from './utils/form.utils';
 
 const checkIsValid = (fields: FieldState[]): boolean =>
@@ -42,6 +42,47 @@ const checkForm = (state: State): Partial<State> => {
   };
 };
 
+const getStateWithStep = (
+  state: State,
+  step: { name: string } & Partial<StepState>,
+) => {
+  const stepIndex = state.steps.findIndex((f) => f.name === step.name);
+  const oldStep = state.steps[stepIndex];
+
+  const isActive = state.form.navigatedStepName
+    ? state.form.navigatedStepName === step.name
+    : state.form.initialStepName === step.name;
+
+  const newStep = {
+    ...getDefaultStep(step.name),
+    ...step,
+    isActive,
+  };
+
+  const steps = !oldStep ? [...state.steps, newStep] : [...state.steps];
+
+  if (oldStep) {
+    steps[stepIndex] = {
+      ...oldStep,
+      ...newStep,
+    };
+  }
+
+  const orderedSteps = steps.sort((a, b) => a.order - b.order);
+  const enabledSteps = orderedSteps.filter(({ isEnabled }) => isEnabled);
+
+  const initialStepName = enabledSteps.length ? enabledSteps[0].name : null;
+
+  const form = {
+    ...state.form,
+    initialStepName,
+  };
+  return {
+    form,
+    steps: orderedSteps,
+  };
+};
+
 export const createStore = ({
   formId,
   onSubmitRef,
@@ -68,31 +109,10 @@ export const createStore = ({
     internalActions: {
       registerStep: (name, step = {}) => {
         set((state) => {
-          const steps = [
-            ...state.steps,
-            {
-              ...getDefaultStep(name),
-              ...step,
-            },
-          ];
-
-          const orderedSteps = steps.sort((a, b) => a.order - b.order);
-          const enabledSteps = orderedSteps.filter(
-            ({ isEnabled }) => isEnabled,
-          );
-
-          const initialStepName = enabledSteps.length
-            ? enabledSteps[0].name
-            : null;
-
-          const form = {
-            ...state.form,
-            initialStepName,
-          };
-          return {
-            form,
-            steps: orderedSteps,
-          };
+          return getStateWithStep(state, {
+            name,
+            ...step,
+          });
         });
       },
       unregisterStep: (name) => {
@@ -105,40 +125,10 @@ export const createStore = ({
       },
       updateStep: (name, step = {}) => {
         set((state) => {
-          const stepIndex = state.steps.findIndex((f) => f.name === name);
-          const oldStep = state.steps[stepIndex];
-
-          if (!oldStep) return {};
-
-          const steps = [...state.steps];
-
-          const isActive = state.form.navigatedStepName
-            ? state.form.navigatedStepName === name
-            : state.form.initialStepName === name;
-
-          steps[stepIndex] = {
-            ...oldStep,
+          return getStateWithStep(state, {
+            name,
             ...step,
-            isActive,
-          };
-
-          const orderedSteps = steps.sort((a, b) => a.order - b.order);
-          const enabledSteps = orderedSteps.filter(
-            ({ isEnabled }) => isEnabled,
-          );
-
-          const initialStepName = enabledSteps.length
-            ? enabledSteps[0].name
-            : null;
-
-          const form = {
-            ...state.form,
-            initialStepName,
-          };
-          return {
-            form,
-            steps: orderedSteps,
-          };
+          });
         });
       },
       registerField: (name, field = {}) => {

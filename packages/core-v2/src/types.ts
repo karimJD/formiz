@@ -68,11 +68,6 @@ export type FormStateInField = Pick<
   'id' | 'isSubmitted' | 'navigatedStepName' | 'initialStepName'
 >;
 
-export type FormStateInStep = Pick<
-  FormState,
-  'navigatedStepName' | 'initialStepName'
->;
-
 export interface StepState {
   name: string;
   label?: React.ReactNode;
