@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useEffect, useRef } from 'react';
 import shallow from 'zustand/shallow';
 import { FormizContext } from './Formiz';
-import { FormizStepProps, FormStateInStep } from './types';
+import { FormizStepProps, FormStateInStep, StepStateInStep } from './types';
 
 export const FormizStepContext = React.createContext<any>({});
 
@@ -37,10 +37,16 @@ export const FormizStep: React.FC<FormizStepProps> = ({
     ),
     shallow,
   );
-
-  const isActive = form.navigatedStepName
-    ? form.navigatedStepName === name
-    : form.initialStepName === name;
+  const step = useStore<StepStateInStep>(
+    useCallback(
+      ({ steps }): StepStateInStep => {
+        const currentStep = steps.find((s) => s.name === name);
+        return currentStep ? { isActive: currentStep.isActive } : undefined;
+      },
+      [name],
+    ),
+    shallow,
+  );
 
   // Register / Unregister Step
   useEffect(() => {
@@ -64,7 +70,7 @@ export const FormizStep: React.FC<FormizStepProps> = ({
       <Tag
         style={{
           ...style,
-          display: !isActive ? 'none' : null,
+          display: !step?.isActive ? 'none' : null,
         }}
         {...rest}
       >

@@ -157,19 +157,29 @@ export const Playground = () => {
               />
             </Box>
             <pre>{JSON.stringify(state || {}, null, 2)}</pre>
-            {[...Array(1)].map((_x, index) => (
-              <Field
-                key={index}
-                label={`Email ${index + 1}`}
-                name={`user[${index}].email`}
-                validations={[
-                  {
-                    rule: (value) => !!value,
-                    message: 'Required',
-                  },
-                ]}
-              />
-            ))}
+            <Box
+              as={FormizStep}
+              name="step4"
+              isEnabled={showStep}
+              pos="relative"
+              p="40px"
+              border="1px dashed"
+              borderColor="red.500"
+            >
+              {[...Array(1)].map((_x, index) => (
+                <Field
+                  key={index}
+                  label={`Email ${index + 1}`}
+                  name={`user[${index}].email`}
+                  validations={[
+                    {
+                      rule: (value) => !!value,
+                      message: 'Required',
+                    },
+                  ]}
+                />
+              ))}
+            </Box>
             <Box>
               <Button type="submit">Submit</Button>
             </Box>

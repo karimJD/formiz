@@ -111,9 +111,15 @@ export const createStore = ({
           if (!oldStep) return {};
 
           const steps = [...state.steps];
+
+          const isActive = state.form.navigatedStepName
+            ? state.form.navigatedStepName === name
+            : state.form.initialStepName === name;
+
           steps[stepIndex] = {
             ...oldStep,
             ...step,
+            isActive,
           };
 
           const orderedSteps = steps.sort((a, b) => a.order - b.order);

@@ -12,6 +12,7 @@ export const getDefaultStep = (name: string): StepState => ({
   isValidating: false,
   isSubmitted: false,
   isEnabled: true,
+  isActive: false,
 });
 
 export const getDefaultField = (name: string): FieldState => ({

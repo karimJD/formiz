@@ -84,9 +84,11 @@ export interface StepState {
   isValidating: boolean;
   isSubmitted: boolean;
   isEnabled: boolean;
+  isActive: boolean;
 }
 
 export type StepStateInField = undefined | Pick<StepState, 'isSubmitted'>;
+export type StepStateInStep = undefined | Pick<StepState, 'isActive'>;
 
 export interface FormizStepProps {
   as?: any;
