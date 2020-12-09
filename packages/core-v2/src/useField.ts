@@ -7,6 +7,8 @@ import {
   FieldAsyncValidationObject,
   FieldProps,
   FieldValidationObject,
+  FormStateInField,
+  StepStateInField,
 } from './types';
 import { getDefaultField, getExposedField } from './utils/form.utils';
 import { FormizContext } from './Formiz';
@@ -33,9 +35,11 @@ export const useField = ({
     useCallback((state) => state.fields?.find((f) => f.name === name), [name]),
     shallow,
   );
-  const form = useStore(
+  const form = useStore<FormStateInField>(
     useCallback(
-      ({ form: { id, isSubmitted, initialStepName, navigatedStepName } }) => ({
+      ({
+        form: { id, isSubmitted, initialStepName, navigatedStepName },
+      }): FormStateInField => ({
         id,
         isSubmitted,
         initialStepName,
@@ -45,17 +49,19 @@ export const useField = ({
     ),
     shallow,
   );
-  const steps = useStore(
+  const step = useStore<StepStateInField>(
     useCallback(
-      ({ steps }) =>
-        steps.map((step) => ({
-          name: step.name,
-          isSubmitted: step.isSubmitted,
-        })),
-      [],
+      ({ steps }) => {
+        const currentStep = steps.find((step) => step.name === stepName);
+        return currentStep
+          ? { isSubmitted: currentStep.isSubmitted }
+          : undefined;
+      },
+      [stepName],
     ),
     shallow,
   );
+  const isSubmitted = step?.isSubmitted ?? form.isSubmitted;
   const { registerField, unregisterField, updateField } = useStore(
     useCallback((state) => state.internalActions, []),
   );
@@ -157,6 +163,7 @@ export const useField = ({
     /* eslint-disable react-hooks/exhaustive-deps */
     [
       field?.id,
+      updateField,
       JSON.stringify(field?.value),
       JSON.stringify(
         [...(validations || []), ...(asyncValidations || [])]?.reduce<any>(
@@ -176,7 +183,11 @@ export const useField = ({
   );
 
   return {
-    ...getExposedField(field || getDefaultField(name), form, steps),
+    ...getExposedField({
+      field: field || getDefaultField(name),
+      formId: form.id,
+      isSubmitted,
+    }),
     setValue,
   };
 };

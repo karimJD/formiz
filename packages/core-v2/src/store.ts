@@ -3,13 +3,44 @@ import create from 'zustand';
 import { FieldState, FormizProps, State } from './types';
 import { getDefaultField, getDefaultStep } from './utils/form.utils';
 
-const isFormValid = (fields: FieldState[]): boolean =>
+const checkIsValid = (fields: FieldState[]): boolean =>
   fields.every(
     (field) =>
       !field?.errors?.length &&
       !field?.asyncErrors?.length &&
       !field?.externalErrors?.length,
   );
+
+const checkIsPristine = (fields: FieldState[]): boolean =>
+  fields.every((field) => field.isPristine);
+
+const checkIsValidating = (fields: FieldState[]): boolean =>
+  fields.some((field) => field.isValidating);
+
+const checkForm = (state: State): Partial<State> => {
+  const form = {
+    ...state.form,
+    isValid: checkIsValid(state.fields),
+    isPristine: checkIsPristine(state.fields),
+    isValidating: checkIsValidating(state.fields),
+  };
+  const steps = state.steps.map((step) => {
+    const stepFields = state.fields.filter(
+      (field) => field.stepName === step.name,
+    );
+    return {
+      ...step,
+      isValid: checkIsValid(stepFields),
+      isPristine: checkIsPristine(stepFields),
+      isValidating: checkIsValidating(stepFields),
+    };
+  });
+  return {
+    ...state,
+    form,
+    steps,
+  };
+};
 
 export const createStore = ({
   formId,
@@ -113,27 +144,13 @@ export const createStore = ({
               ...(field || {}),
             },
           ];
-          const form = {
-            ...state.form,
-            isValid: isFormValid(fields),
-          };
-          return {
-            form,
-            fields,
-          };
+          return checkForm({ ...state, fields });
         });
       },
       unregisterField: (id) => {
         set((state) => {
           const fields = state.fields.filter((f) => f.id !== id);
-          const form = {
-            ...state.form,
-            isValid: isFormValid(fields),
-          };
-          return {
-            form,
-            fields,
-          };
+          return checkForm({ ...state, fields });
         });
       },
       updateField: (id, field = {}) => {
@@ -150,14 +167,7 @@ export const createStore = ({
               ...field,
             },
           ];
-          const form = {
-            ...state.form,
-            isValid: isFormValid(fields),
-          };
-          return {
-            form,
-            fields,
-          };
+          return checkForm({ ...state, fields });
         });
       },
     },

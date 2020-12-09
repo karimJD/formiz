@@ -62,6 +62,17 @@ export interface FormState {
   initialStepName: string | null;
   navigatedStepName: string | null;
 }
+
+export type FormStateInField = Pick<
+  FormState,
+  'id' | 'isSubmitted' | 'navigatedStepName' | 'initialStepName'
+>;
+
+export type FormStateInStep = Pick<
+  FormState,
+  'navigatedStepName' | 'initialStepName'
+>;
+
 export interface StepState {
   name: string;
   label?: React.ReactNode;
@@ -74,6 +85,8 @@ export interface StepState {
   isSubmitted: boolean;
   isEnabled: boolean;
 }
+
+export type StepStateInField = undefined | Pick<StepState, 'isSubmitted'>;
 
 export interface FormizStepProps {
   as?: any;

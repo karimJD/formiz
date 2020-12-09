@@ -1,7 +1,7 @@
-import React, { useCallback, useContext, useEffect } from 'react';
-import { useRef } from 'react';
+import React, { useCallback, useContext, useEffect, useRef } from 'react';
+import shallow from 'zustand/shallow';
 import { FormizContext } from './Formiz';
-import { FormizStepProps } from './types';
+import { FormizStepProps, FormStateInStep } from './types';
 
 export const FormizStepContext = React.createContext<any>({});
 
@@ -10,7 +10,7 @@ export const FormizStep: React.FC<FormizStepProps> = ({
   children,
   name,
   label,
-  order,
+  order = 0,
   isEnabled = true,
   style = {},
   ...rest
@@ -27,7 +27,20 @@ export const FormizStep: React.FC<FormizStepProps> = ({
   const { registerStep, unregisterStep, updateStep } = useStore(
     useCallback((state) => state.internalActions, []),
   );
-  const isActive = true;
+  const form = useStore<FormStateInStep>(
+    useCallback(
+      ({ form: { initialStepName, navigatedStepName } }): FormStateInStep => ({
+        initialStepName,
+        navigatedStepName,
+      }),
+      [],
+    ),
+    shallow,
+  );
+
+  const isActive = form.navigatedStepName
+    ? form.navigatedStepName === name
+    : form.initialStepName === name;
 
   // Register / Unregister Step
   useEffect(() => {
@@ -37,6 +50,7 @@ export const FormizStep: React.FC<FormizStepProps> = ({
     };
   }, [registerStep, unregisterStep, name]);
 
+  // Update Step
   useEffect(() => {
     updateStep(nameRef.current, { isEnabled, label, order });
   }, [updateStep, isEnabled, label, order]);
