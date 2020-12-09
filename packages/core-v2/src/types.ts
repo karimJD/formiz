@@ -131,6 +131,11 @@ export interface FormInternalActions {
   updateField(id: string, field: Partial<FieldState>): void;
 }
 
+export interface UseFormValues extends FormExposedActions {
+  connect(store: any): void;
+  state: any;
+}
+
 export type State = {
   form: FormState;
   steps: StepState[];

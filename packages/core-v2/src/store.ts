@@ -205,12 +205,14 @@ export const createStore = ({
           };
         });
 
-        if (get().form.isValid && onValidSubmitRef.current) {
-          onValidSubmitRef.current({ demo: 'test' }); // TODO values
-        }
-
-        if (!get().form.isValid && onInvalidSubmitRef.current) {
-          onInvalidSubmitRef.current({ demo: 'test' }); // TODO values
+        if (get().form.isValid && !get().form.isValidating) {
+          if (onValidSubmitRef.current) {
+            onValidSubmitRef.current({ demo: 'test' }); // TODO values
+          }
+        } else {
+          if (onInvalidSubmitRef.current) {
+            onInvalidSubmitRef.current({ demo: 'test' }); // TODO values
+          }
         }
 
         if (onSubmitRef.current) {

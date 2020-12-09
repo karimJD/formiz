@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { UseStore } from 'zustand';
 import shallow from 'zustand/shallow';
-import { State, FormExposedActions } from './types';
+import { State, FormExposedActions, UseFormValues } from './types';
 import { FormizContext } from './Formiz';
 
 export const defaultExposedActions: FormExposedActions = {
@@ -16,7 +16,9 @@ export const defaultExposedActions: FormExposedActions = {
   reset: () => {},
 };
 
-export const useForm = (selector = (state: State): any => {}) => {
+export const useForm = (
+  selector = (state: State): any => {},
+): UseFormValues => {
   const ctx = useContext(FormizContext);
   const connectedStoreRef = useRef<UseStore<State>>();
   const selectorRef = useRef<(state: State) => any>();
