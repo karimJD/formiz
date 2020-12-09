@@ -220,7 +220,33 @@ export const createStore = ({
       setFieldsValues: (objectOfValues) => {},
       invalidateFields: (objectOfErrors) => {},
       getFieldStepName: (fieldName) => null,
-      submitStep: (event) => {},
+      submitStep: (event) => {
+        if (event) event.preventDefault();
+
+        set((state) => ({
+          steps: state.steps.map((step) => ({
+            ...step,
+            isSubmitted: step.isActive ? true : step.isSubmitted,
+          })),
+        }));
+
+        const currentStep = get().steps.find((step) => step.isActive);
+
+        if (!currentStep?.isValid || currentStep?.isValidating) {
+          return;
+        }
+
+        const enabledSteps = get().steps.filter((step) => step.isEnabled);
+        const isLastStep =
+          enabledSteps[enabledSteps.length - 1]?.name === currentStep?.name;
+
+        if (isLastStep) {
+          get().exposedActions.submit();
+          return;
+        }
+
+        get().exposedActions.nextStep();
+      },
       goToStep: (stepName) => {
         set((state) => {
           if (!stepName) return {};

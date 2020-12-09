@@ -80,7 +80,7 @@ const Field = (props) => {
 
 export const Playground = () => {
   const [showStep, setShowStep] = useState(true);
-  const { connect, submit, goToStep, prevStep, nextStep, state } = useForm(
+  const { connect, submitStep, goToStep, prevStep, nextStep, state } = useForm(
     (s) => s.form,
   );
   const handleSubmit = (...args) => {
@@ -93,7 +93,7 @@ export const Playground = () => {
           Playground
           <DebugRender />
         </PageHeader>
-        <form onSubmit={submit}>
+        <form onSubmit={submitStep}>
           <Button onClick={() => setShowStep((x) => !x)}>Toggle step</Button>
           <Button onClick={() => goToStep('step2')}>Go step 2</Button>
           <Button onClick={() => goToStep('step3')}>Go step 3</Button>
