@@ -1,7 +1,11 @@
 import { RefObject } from 'react';
 import create from 'zustand';
 import { FieldState, FormizProps, FormState, State, StepState } from './types';
-import { getDefaultField, getDefaultStep } from './utils/form.utils';
+import {
+  getDefaultField,
+  getDefaultStep,
+  getFormValues,
+} from './utils/form.utils';
 
 const checkIsValid = (fields: FieldState[]): boolean =>
   fields.every(
@@ -205,23 +209,32 @@ export const createStore = ({
           };
         });
 
+        const values = getFormValues(get().fields);
+
         if (get().form.isValid && !get().form.isValidating) {
           if (onValidSubmitRef.current) {
-            onValidSubmitRef.current({ demo: 'test' }); // TODO values
+            onValidSubmitRef.current(values);
           }
         } else {
           if (onInvalidSubmitRef.current) {
-            onInvalidSubmitRef.current({ demo: 'test' }); // TODO values
+            onInvalidSubmitRef.current(values);
           }
         }
 
         if (onSubmitRef.current) {
-          onSubmitRef.current({ demo: 'test' }); // TODO values
+          onSubmitRef.current(values);
         }
       },
-      setFieldsValues: (objectOfValues) => {},
-      invalidateFields: (objectOfErrors) => {},
-      getFieldStepName: (fieldName) => null,
+      setFieldsValues: (objectOfValues) => {
+        // TODO
+      },
+      invalidateFields: (objectOfErrors) => {
+        // TODO
+      },
+      getFieldStepName: (fieldName) => {
+        // TODO
+        return null;
+      },
       submitStep: (event) => {
         if (event) event.preventDefault();
 
@@ -279,6 +292,8 @@ export const createStore = ({
         const stepIndex = enabledSteps.findIndex((step) => step.isActive);
         state.exposedActions.goToStep(enabledSteps[stepIndex - 1]?.name);
       },
-      reset: () => {},
+      reset: () => {
+        // TODO
+      },
     },
   }));
