@@ -10,12 +10,15 @@ export const Formiz: React.FC<FormizProps> = ({
   children = null,
   connect,
   id = getFormUniqueId(),
+  initialValues = {},
   onSubmit = () => {},
   onValidSubmit = () => {},
   onInvalidSubmit = () => {},
 }) => {
   const useStoreRef = useRef<UseStore<State>>();
 
+  const initialValuesRef = useRef<FormizProps['initialValues']>();
+  initialValuesRef.current = initialValues;
   const onSubmitRef = useRef<FormizProps['onSubmit']>();
   onSubmitRef.current = onSubmit;
   const onValidSubmitRef = useRef<FormizProps['onValidSubmit']>();
@@ -26,6 +29,7 @@ export const Formiz: React.FC<FormizProps> = ({
   if (!useStoreRef.current) {
     useStoreRef.current = createStore({
       formId: id,
+      initialValuesRef,
       onSubmitRef,
       onValidSubmitRef,
       onInvalidSubmitRef,

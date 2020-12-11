@@ -60,7 +60,7 @@ export const getExposedField = ({
   };
 };
 
-const isObject = (x: any) =>
+const isObject = (x: any): boolean =>
   x && typeof x === 'object' && x.constructor === Object;
 
 const parseValues = (values: any) =>

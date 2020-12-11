@@ -93,7 +93,11 @@ export const Playground = () => {
     console.log(...args);
   };
   return (
-    <Formiz connect={connect} onValidSubmit={handleSubmit}>
+    <Formiz
+      connect={connect}
+      onValidSubmit={handleSubmit}
+      initialValues={{ firstname: 'Hello', user: [{ email: 'Initial' }] }}
+    >
       <PageLayout v2>
         <PageHeader githubPath="Playground.js">
           Playground

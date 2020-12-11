@@ -1,5 +1,6 @@
 import { RefObject } from 'react';
 import create from 'zustand';
+import lodashGet from 'lodash/get';
 import { FieldState, FormizProps, FormState, State, StepState } from './types';
 import {
   getDefaultField,
@@ -101,11 +102,13 @@ const getStateWithStep = (
 
 export const createStore = ({
   formId,
+  initialValuesRef,
   onSubmitRef,
   onValidSubmitRef,
   onInvalidSubmitRef,
 }: {
-  formId: string;
+  formId: FormState['id'];
+  initialValuesRef: RefObject<FormizProps['initialValues']>;
   onSubmitRef: RefObject<FormizProps['onSubmit']>;
   onValidSubmitRef: RefObject<FormizProps['onValidSubmit']>;
   onInvalidSubmitRef: RefObject<FormizProps['onInvalidSubmit']>;
@@ -150,11 +153,20 @@ export const createStore = ({
       },
       registerField: (name, field = {}) => {
         set((state) => {
+          const defaultField = getDefaultField(name);
+          const initialValue =
+            lodashGet(initialValuesRef.current, name) ??
+            field.initialValue ??
+            field.value ??
+            defaultField.value;
+
           const newField = {
-            ...getDefaultField(name),
+            ...defaultField,
             ...(field || {}),
+            value: initialValue,
+            initialValue,
           };
-          newField.value = newField.initialValue ?? newField.value;
+
           const fields = [...state.fields, newField];
           return checkState({
             ...state,
