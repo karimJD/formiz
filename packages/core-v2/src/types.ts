@@ -51,7 +51,7 @@ export interface Field {
 
 export interface UseFieldValues extends Field {
   setValue(value: FieldValue): void;
-  otherProps?: any;
+  otherProps: any;
 }
 
 export interface FormState {

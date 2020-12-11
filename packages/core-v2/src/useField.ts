@@ -19,6 +19,7 @@ export const useField = ({
   defaultValue = null,
   validations = [],
   asyncValidations = [],
+  ...otherProps
 }: FieldProps): UseFieldValues => {
   const isMountedRef = useRef(true);
   const formizContext = useContext(FormizContext);
@@ -194,5 +195,6 @@ export const useField = ({
       isSubmitted,
     }),
     setValue,
+    otherProps,
   };
 };

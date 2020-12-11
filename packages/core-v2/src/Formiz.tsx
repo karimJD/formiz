@@ -7,6 +7,7 @@ import { UseStore } from 'zustand';
 export const FormizContext = React.createContext<FormizContextType>(null);
 
 export const Formiz: React.FC<FormizProps> = ({
+  autoForm = false,
   children = null,
   connect,
   id = getFormUniqueId(),
@@ -44,7 +45,16 @@ export const Formiz: React.FC<FormizProps> = ({
 
   return (
     <FormizContext.Provider value={{ useStore: useStoreRef.current }}>
-      {children}
+      {!autoForm ? (
+        children
+      ) : (
+        <form
+          noValidate
+          onSubmit={useStoreRef.current.getState().exposedActions.submit}
+        >
+          {children}
+        </form>
+      )}
     </FormizContext.Provider>
   );
 };
