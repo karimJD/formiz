@@ -45,6 +45,7 @@ const checkSteps = (state: State): StepState[] => {
       isPristine: checkIsPristine(stepFields),
       isValidating: checkIsValidating(stepFields),
       isActive,
+      isVisited: step.isVisited || isActive,
     };
   });
   return steps;
@@ -308,7 +309,14 @@ export const createStore = ({
           const form = {
             ...state.form,
             resetKey: state.form.resetKey + 1,
+            isSubmitted: false,
+            navigatedStepName: null,
           };
+          const steps = state.steps.map((step) => ({
+            ...step,
+            isSubmitted: false,
+            isVisited: false,
+          }));
           const fields = state.fields.map((field) => ({
             ...field,
             value: field.initialValue,
@@ -316,6 +324,7 @@ export const createStore = ({
           return checkState({
             ...state,
             form,
+            steps,
             fields,
           });
         });
