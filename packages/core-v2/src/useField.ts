@@ -16,6 +16,7 @@ import { FormizStepContext } from './FormizStep';
 
 export const useField = ({
   name,
+  defaultValue = null,
   validations = [],
   asyncValidations = [],
 }: FieldProps): UseFieldValues => {
@@ -68,6 +69,8 @@ export const useField = ({
 
   const fieldRef = useRef<FieldState>();
   fieldRef.current = field;
+  const defaultValueRef = useRef<Pick<FieldProps, 'defaultValue'>>();
+  defaultValueRef.current = defaultValue;
   const validationsRef = useRef<FieldValidationObject[]>();
   validationsRef.current = validations;
   const asyncValidationsRef = useRef<FieldAsyncValidationObject[]>();
@@ -83,7 +86,7 @@ export const useField = ({
 
   // Register / Unregister Field
   useEffect(() => {
-    registerField(name, { stepName });
+    registerField(name, { stepName, defaultValue: defaultValueRef.current });
     return () => {
       if (fieldRef.current?.id) {
         unregisterField(fieldRef.current.id);

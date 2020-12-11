@@ -133,6 +133,7 @@ export const Playground = () => {
               <Field
                 label="Lastname"
                 name="lastname"
+                defaultValue="Test"
                 validations={[
                   {
                     rule: (value) => !!value,

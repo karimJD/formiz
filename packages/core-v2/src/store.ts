@@ -150,13 +150,12 @@ export const createStore = ({
       },
       registerField: (name, field = {}) => {
         set((state) => {
-          const fields = [
-            ...state.fields,
-            {
-              ...getDefaultField(name),
-              ...(field || {}),
-            },
-          ];
+          const newField = {
+            ...getDefaultField(name),
+            ...(field || {}),
+          };
+          newField.value = newField.defaultValue ?? newField.value;
+          const fields = [...state.fields, newField];
           return checkState({
             ...state,
             fields,

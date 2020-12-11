@@ -28,6 +28,7 @@ export interface FieldState {
   id: string;
   name: string;
   value: FieldValue;
+  defaultValue: FieldValue;
   errors: FieldErrors;
   asyncErrors: FieldErrors;
   externalErrors: FieldErrors;

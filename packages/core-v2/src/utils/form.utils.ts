@@ -19,6 +19,7 @@ export const getDefaultField = (name: string): FieldState => ({
   id: getFieldUniqueId(),
   name,
   value: null,
+  defaultValue: null,
   errors: [],
   asyncErrors: [],
   externalErrors: [],
