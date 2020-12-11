@@ -6,13 +6,13 @@ export type FieldError = string | undefined;
 export type FieldErrors = FieldError[];
 
 export interface FieldValidationObject {
-  rule(value: FieldValue): boolean;
+  rule(formattedValue: FieldValue, value: FieldValue): boolean;
   message?: string;
   deps?: any[];
 }
 
 export interface FieldAsyncValidationObject {
-  rule(value: FieldValue): Promise<boolean>;
+  rule(formattedValue: FieldValue, value: FieldValue): Promise<boolean>;
   message?: string;
   deps?: any[];
 }
@@ -31,6 +31,7 @@ export interface FieldState {
   id: string;
   name: string;
   value: FieldValue;
+  formattedValue: FieldValue;
   initialValue: FieldValue;
   errors: FieldErrors;
   asyncErrors: FieldErrors;

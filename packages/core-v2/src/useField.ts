@@ -9,16 +9,35 @@ import {
   FieldValidationObject,
   FormStateInField,
   StepStateInField,
+  FieldValue,
 } from './types';
 import { getDefaultField, getExposedField } from './utils/form.utils';
 import { FormizContext } from './Formiz';
 import { FormizStepContext } from './FormizStep';
 
+const getValidationsWithRequired = (
+  validations: FieldValidationObject[],
+  required: boolean | string,
+) => {
+  if (!required && required !== '') {
+    return validations;
+  }
+  return [
+    ...validations,
+    {
+      rule: (x: FieldValue) => !!x || x === 0,
+      message: required !== true ? required : '',
+    },
+  ];
+};
+
 export const useField = ({
   name,
   defaultValue = null,
+  required = false,
   validations = [],
   asyncValidations = [],
+  formatValue = (value) => value,
   ...otherProps
 }: FieldProps): UseFieldValues => {
   const isMountedRef = useRef(true);
@@ -73,17 +92,23 @@ export const useField = ({
   fieldRef.current = field;
   const defaultValueRef = useRef<Pick<FieldProps, 'defaultValue'>>();
   defaultValueRef.current = defaultValue;
-  const validationsRef = useRef<FieldValidationObject[]>();
-  validationsRef.current = validations;
-  const asyncValidationsRef = useRef<FieldAsyncValidationObject[]>();
+  const validationsRef = useRef<FieldProps['validations']>();
+  validationsRef.current = getValidationsWithRequired(
+    validations || [],
+    required,
+  );
+  const asyncValidationsRef = useRef<FieldProps['asyncValidations']>();
   asyncValidationsRef.current = asyncValidations;
+  const formatValueRef = useRef<FieldProps['formatValue']>();
+  formatValueRef.current = formatValue;
 
   const setValue = useCallback(
-    (newValue) => {
+    (value) => {
       if (!field?.id) return;
       updateField(field.id, {
         name,
-        value: newValue,
+        value,
+        formattedValue: formatValueRef.current?.(value),
         externalErrors: [],
         isPristine: false,
       });
@@ -101,6 +126,17 @@ export const useField = ({
     };
   }, [registerField, unregisterField, name, stepName]);
 
+  // Trigger setValue if value is changed in global state
+  useEffect(
+    () => {
+      setValue(field?.value);
+    },
+    /* eslint-disable react-hooks/exhaustive-deps */ [
+      setValue,
+      JSON.stringify(field?.value),
+    ],
+  ); /* eslint-enable */
+
   // Validations
   useEffect(
     () => {
@@ -112,7 +148,7 @@ export const useField = ({
 
         const fieldErrors = (validationsRef.current || []).reduce(
           (errors: FieldErrors, validation: FieldValidationObject) =>
-            !validation.rule(field?.value)
+            !validation.rule(field.formattedValue, field.value)
               ? [...errors, validation.message]
               : errors,
           [],
@@ -138,7 +174,10 @@ export const useField = ({
         const rules = await Promise.all(
           (asyncValidationsRef.current || []).map(
             async (validation: FieldAsyncValidationObject) => {
-              const isValid = await validation.rule(field.value);
+              const isValid = await validation.rule(
+                field.formattedValue,
+                field.value,
+              );
               return {
                 ...validation,
                 isValid,
@@ -175,6 +214,7 @@ export const useField = ({
       field?.id,
       updateField,
       JSON.stringify(field?.value),
+      JSON.stringify(field?.formattedValue),
       JSON.stringify(
         [...(validations || []), ...(asyncValidations || [])]?.reduce<any>(
           (acc, cur) => [...acc, ...(cur.deps || []), cur.message],

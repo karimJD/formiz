@@ -165,6 +165,7 @@ export const createStore = ({
             ...defaultField,
             ...(field || {}),
             value: initialValue,
+            formattedValue: initialValue,
             initialValue,
           };
 
@@ -243,6 +244,7 @@ export const createStore = ({
           const fields = state.fields.map((field) => ({
             ...field,
             value: objectOfValues[field.name] ?? field.value,
+            formattedValue: objectOfValues[field.name] ?? field.value,
           }));
 
           return checkState({
@@ -346,6 +348,7 @@ export const createStore = ({
           const fields = state.fields.map((field) => ({
             ...field,
             value: field.initialValue,
+            formattedValue: field.initialValue,
           }));
           return checkState({
             ...state,
