@@ -4,16 +4,19 @@ import { UseStore } from 'zustand';
 export type FieldValue = any;
 export type FieldError = string | undefined;
 export type FieldErrors = FieldError[];
+
 export interface FieldValidationObject {
   rule(value: FieldValue): boolean;
   message?: string;
   deps?: any[];
 }
+
 export interface FieldAsyncValidationObject {
   rule(value: FieldValue): Promise<boolean>;
   message?: string;
   deps?: any[];
 }
+
 export interface FieldProps {
   name: string;
   defaultValue?: FieldValue;
@@ -114,7 +117,7 @@ export interface FormizProps {
 export interface FormExposedActions {
   submit(event?: React.FormEvent<HTMLFormElement>): void;
   setFieldsValues(objectOfValues: { [key: string]: FieldValue }): void;
-  invalidateFields(objectOfErrors: { [key: string]: string }): void;
+  setFieldsErrors(objectOfErrors: { [key: string]: FieldError }): void;
   getFieldStepName(fieldName: string): null | string;
   submitStep(event?: React.FormEvent<HTMLFormElement>): void;
   goToStep(stepName: string): void;

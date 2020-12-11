@@ -81,7 +81,12 @@ export const useField = ({
   const setValue = useCallback(
     (newValue) => {
       if (!field?.id) return;
-      updateField(field.id, { name, value: newValue, isPristine: false });
+      updateField(field.id, {
+        name,
+        value: newValue,
+        externalErrors: [],
+        isPristine: false,
+      });
     },
     [field?.id, name, updateField],
   );

@@ -238,10 +238,36 @@ export const createStore = ({
         }
       },
       setFieldsValues: (objectOfValues) => {
-        // TODO
+        if (!objectOfValues) return;
+        set((state) => {
+          const fields = state.fields.map((field) => ({
+            ...field,
+            value: objectOfValues[field.name] ?? field.value,
+          }));
+
+          return checkState({
+            ...state,
+            fields,
+          });
+        });
       },
-      invalidateFields: (objectOfErrors) => {
-        // TODO
+      // TODO Documenation about rename from invalidateFields to setFieldsErrors
+      setFieldsErrors: (objectOfErrors) => {
+        if (!objectOfErrors) return;
+
+        set((state) => {
+          const fields = state.fields.map((field) => ({
+            ...field,
+            externalErrors: objectOfErrors[field.name]
+              ? [objectOfErrors[field.name], ...field.externalErrors]
+              : field.externalErrors,
+          }));
+
+          return checkState({
+            ...state,
+            fields,
+          });
+        });
       },
       getFieldStepName: (fieldName) => {
         // TODO
