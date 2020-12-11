@@ -28,7 +28,7 @@ export interface FieldState {
   id: string;
   name: string;
   value: FieldValue;
-  defaultValue: FieldValue;
+  initialValue: FieldValue;
   errors: FieldErrors;
   asyncErrors: FieldErrors;
   externalErrors: FieldErrors;
@@ -45,7 +45,7 @@ export interface Field {
   isValidating: boolean;
   isSubmitted: boolean;
   value: FieldValue;
-  // resetKey: number;
+  resetKey: number;
   id: string;
 }
 
@@ -67,7 +67,7 @@ export interface FormState {
 
 export type FormStateInField = Pick<
   FormState,
-  'id' | 'isSubmitted' | 'navigatedStepName' | 'initialStepName'
+  'id' | 'resetKey' | 'isSubmitted' | 'navigatedStepName' | 'initialStepName'
 >;
 
 export interface StepState {

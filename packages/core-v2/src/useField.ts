@@ -39,9 +39,10 @@ export const useField = ({
   const form = useStore<FormStateInField>(
     useCallback(
       ({
-        form: { id, isSubmitted, initialStepName, navigatedStepName },
+        form: { id, resetKey, isSubmitted, initialStepName, navigatedStepName },
       }): FormStateInField => ({
         id,
+        resetKey,
         isSubmitted,
         initialStepName,
         navigatedStepName,
@@ -86,7 +87,7 @@ export const useField = ({
 
   // Register / Unregister Field
   useEffect(() => {
-    registerField(name, { stepName, defaultValue: defaultValueRef.current });
+    registerField(name, { stepName, initialValue: defaultValueRef.current });
     return () => {
       if (fieldRef.current?.id) {
         unregisterField(fieldRef.current.id);
@@ -189,6 +190,7 @@ export const useField = ({
     ...getExposedField({
       field: field || getDefaultField(name),
       formId: form.id,
+      formResetKey: form.resetKey,
       isSubmitted,
     }),
     setValue,

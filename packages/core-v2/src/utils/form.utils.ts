@@ -19,7 +19,7 @@ export const getDefaultField = (name: string): FieldState => ({
   id: getFieldUniqueId(),
   name,
   value: null,
-  defaultValue: null,
+  initialValue: null,
   errors: [],
   asyncErrors: [],
   externalErrors: [],
@@ -35,14 +35,15 @@ export const getExposedField = ({
     errors,
     isPristine,
     isValidating,
-    // resetKey, // TODO
     value,
   },
   formId,
+  formResetKey,
   isSubmitted,
 }: {
   field: FieldState;
   formId: string;
+  formResetKey: number;
   isSubmitted: boolean;
 }): Field => {
   const allErrors = [...externalErrors, ...asyncErrors, ...errors];
@@ -55,7 +56,7 @@ export const getExposedField = ({
     isValidating,
     isSubmitted,
     value,
-    // resetKey, // TODO
+    resetKey: formResetKey,
   };
 };
 

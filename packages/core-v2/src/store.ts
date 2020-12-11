@@ -154,7 +154,7 @@ export const createStore = ({
             ...getDefaultField(name),
             ...(field || {}),
           };
-          newField.value = newField.defaultValue ?? newField.value;
+          newField.value = newField.initialValue ?? newField.value;
           const fields = [...state.fields, newField];
           return checkState({
             ...state,
@@ -292,7 +292,21 @@ export const createStore = ({
         state.exposedActions.goToStep(enabledSteps[stepIndex - 1]?.name);
       },
       reset: () => {
-        // TODO
+        set((state) => {
+          const form = {
+            ...state.form,
+            resetKey: state.form.resetKey + 1,
+          };
+          const fields = state.fields.map((field) => ({
+            ...field,
+            value: field.initialValue,
+          }));
+          return checkState({
+            ...state,
+            form,
+            fields,
+          });
+        });
       },
     },
   }));
