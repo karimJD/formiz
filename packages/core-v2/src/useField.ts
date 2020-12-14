@@ -118,7 +118,10 @@ export const useField = ({
 
   // Register / Unregister Field
   useEffect(() => {
-    registerField(name, { stepName, initialValue: defaultValueRef.current });
+    registerField(name, {
+      stepName,
+      initialValue: formatValueRef.current?.(defaultValueRef.current),
+    });
     return () => {
       if (fieldRef.current?.id) {
         unregisterField(fieldRef.current.id);
