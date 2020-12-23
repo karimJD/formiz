@@ -1,12 +1,10 @@
 import React from 'react';
-import {
-  Button, Heading, Link, Box,
-} from '@chakra-ui/react';
+import { Button, Heading, Link, Box } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
-import { useForm } from '@formiz/core';
+import { useForm } from '@formiz/core-v2';
 
 export const PageHeader = ({ children, onReset = () => {}, githubPath }) => {
-  const form = useForm({ subscribe: false });
+  const form = useForm();
 
   return (
     <Box mb="6" data-test="header">

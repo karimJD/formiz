@@ -5,7 +5,7 @@ import {
   InputRightElement,
   Spinner,
 } from '@chakra-ui/react';
-import { useField } from '@formiz/core';
+import { useField } from '@formiz/core-v2';
 import { FormGroup } from '../FormGroup';
 
 export const FieldInput = (props) => {
@@ -21,9 +21,7 @@ export const FieldInput = (props) => {
     otherProps,
   } = useField(props);
   const { required, name } = props;
-  const {
-    children, label, type, placeholder, helper, ...rest
-  } = otherProps;
+  const { children, label, type, placeholder, helper, ...rest } = otherProps;
   const [isTouched, setIsTouched] = useState(false);
   const showError = !isValid && (isTouched || isSubmitted);
 

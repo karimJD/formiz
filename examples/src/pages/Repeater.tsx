@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { v4 as uuid } from 'uuid';
-import { Formiz, useForm } from '@formiz/core';
-import {
-  Button, Flex, Stack, IconButton, Box,
-} from '@chakra-ui/react';
+import { Formiz, useForm } from '@formiz/core-v2';
+import { Button, Flex, Stack, IconButton, Box } from '@chakra-ui/react';
 import { AddIcon, DeleteIcon } from '@chakra-ui/icons';
 import { FieldInput } from '../components/Fields/FieldInput';
 import { PageHeader } from '../components/PageHeader';
@@ -22,13 +20,13 @@ const defaultCollection = [
 ];
 
 export const Repeater = () => {
-  const form = useForm({ subscribe: 'form' });
+  const form = useForm((s) => s.form);
   const toastValues = useToastValues();
   const [collection, setCollection] = useState(defaultCollection);
 
   useEffect(() => {
     setCollection(defaultCollection);
-  }, [form.resetKey]);
+  }, [form.state?.resetKey]);
 
   const handleSubmit = (values) => {
     toastValues(values);
@@ -59,8 +57,8 @@ export const Repeater = () => {
 
   return (
     <Formiz
-      key={form.resetKey}
-      connect={form}
+      key={form.state?.resetKey}
+      connect={form.connect}
       onValidSubmit={handleSubmit}
       initialValues={{
         collection: [
@@ -69,9 +67,11 @@ export const Repeater = () => {
         ],
       }}
     >
-      <PageLayout>
+      <PageLayout v2>
         <form noValidate onSubmit={form.submit}>
           <PageHeader githubPath="Repeater.js">Repeater</PageHeader>
+
+          <pre>{JSON.stringify(form.state, null, 2)}</pre>
 
           <Box>
             {collection.map(({ id, name }, index) => (
@@ -133,7 +133,7 @@ export const Repeater = () => {
               type="submit"
               ml="auto"
               colorScheme="brand"
-              isDisabled={!form.isValid && form.isSubmitted}
+              isDisabled={!form.state?.isValid && form.state?.isSubmitted}
             >
               Submit
             </Button>

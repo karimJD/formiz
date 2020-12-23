@@ -1,5 +1,5 @@
 import React from 'react';
-import { Formiz, useForm } from '@formiz/core';
+import { Formiz, useForm } from '@formiz/core-v2';
 import { isEmail } from '@formiz/validations';
 import { Button, Flex } from '@chakra-ui/react';
 import { FieldInput } from '../components/Fields/FieldInput';
@@ -7,21 +7,40 @@ import { PageHeader } from '../components/PageHeader';
 import { useToastValues } from '../hooks/useToastValues';
 import { PageLayout } from '../layout/PageLayout';
 
+const Footer = ({ ...rest }) => {
+  const form = useForm((s) => s.form);
+  return (
+    <Flex {...rest}>
+      <Button
+        type="submit"
+        ml="auto"
+        colorScheme="brand"
+        isDisabled={
+          (!form.state?.isValid || form.state?.isValidating) &&
+          form.state?.isSubmitted
+        }
+      >
+        Submit
+      </Button>
+    </Flex>
+  );
+};
+
 export const AutoForm = () => {
-  const form = useForm({ subscribe: 'form' });
+  const form = useForm();
   const toastValues = useToastValues();
 
   const handleSubmit = (values) => {
     toastValues(values);
 
-    form.invalidateFields({
+    form.setFieldsErrors({
       name: 'You can display an error after an API call',
     });
   };
 
   return (
-    <Formiz connect={form} onValidSubmit={handleSubmit} autoForm>
-      <PageLayout>
+    <Formiz connect={form.connect} onValidSubmit={handleSubmit} autoForm>
+      <PageLayout v2>
         <PageHeader githubPath="AutoForm.js">Auto form</PageHeader>
         <FieldInput
           name="name"
@@ -43,9 +62,12 @@ export const AutoForm = () => {
           ]}
           asyncValidations={[
             {
-              rule: async (value) => new Promise((resolve) => setTimeout(() => {
-                resolve((value || '').toLowerCase() === 'john@company.com');
-              }, 1000)),
+              rule: async (value) =>
+                new Promise((resolve) =>
+                  setTimeout(() => {
+                    resolve((value || '').toLowerCase() === 'john@company.com');
+                  }, 1000),
+                ),
               message: 'Email already used. Try john@company.com',
             },
           ]}
@@ -53,9 +75,11 @@ export const AutoForm = () => {
           <Button
             size="sm"
             variant="link"
-            onClick={() => form.setFieldsValues({
-              email: 'john@company.com',
-            })}
+            onClick={() =>
+              form.setFieldsValues({
+                email: 'john@company.com',
+              })
+            }
           >
             Fill with john@company.com
           </Button>
@@ -65,18 +89,7 @@ export const AutoForm = () => {
           label="Company"
           formatValue={(val) => (val || '').trim()}
         />
-        <Flex>
-          <Button
-            type="submit"
-            ml="auto"
-            colorScheme="brand"
-            isDisabled={
-              (!form.isValid || form.isValidating) && form.isSubmitted
-            }
-          >
-            Submit
-          </Button>
-        </Flex>
+        <Footer />
       </PageLayout>
     </Formiz>
   );

@@ -88,7 +88,7 @@ export const Playground = () => {
     prevStep,
     nextStep,
     state,
-  } = useForm((s) => s.form);
+  } = useForm();
   const handleSubmit = (...args) => {
     console.log(...args);
   };
