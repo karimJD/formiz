@@ -7,6 +7,8 @@ import {
   FieldAsyncValidationObject,
   FieldProps,
   FieldValidationObject,
+  FormStateInField,
+  StepStateInField,
   FieldValue,
 } from './types';
 import { getDefaultField, getExposedField } from './utils/form.utils';
@@ -56,23 +58,35 @@ export const useField = ({
   const stepNameRef = useRef(stepName);
   stepNameRef.current = stepName;
 
-  const { field, form, step } = useStore(
+  const field = useStore(
     useCallback(
-      (state) => {
-        const currentStep = state.steps.find((step) => step.name === stepName);
-        return {
-          field: state.fields?.find((f) => f.id === fieldIdRef.current),
-          form: {
-            id: state.form.id,
-            resetKey: state.form.resetKey,
-            isSubmitted: state.form.isSubmitted,
-            initialStepName: state.form.initialStepName,
-            navigatedStepName: state.form.navigatedStepName,
-          },
-          step: currentStep
-            ? { isSubmitted: currentStep.isSubmitted }
-            : undefined,
-        };
+      (state) => state.fields?.find((f) => f.id === fieldIdRef.current),
+      [],
+    ),
+    shallow,
+  );
+  const form = useStore<FormStateInField>(
+    useCallback(
+      ({
+        form: { id, resetKey, isSubmitted, initialStepName, navigatedStepName },
+      }): FormStateInField => ({
+        id,
+        resetKey,
+        isSubmitted,
+        initialStepName,
+        navigatedStepName,
+      }),
+      [],
+    ),
+    shallow,
+  );
+  const step = useStore<StepStateInField>(
+    useCallback(
+      ({ steps }) => {
+        const currentStep = steps.find((step) => step.name === stepName);
+        return currentStep
+          ? { isSubmitted: currentStep.isSubmitted }
+          : undefined;
       },
       [stepName],
     ),
