@@ -7,7 +7,7 @@ import { FormizContext } from './Formiz';
 export const defaultExposedActions: FormExposedActions = {
   submit: () => {},
   setFieldsValues: () => {},
-  invalidateFields: () => {},
+  setFieldsErrors: () => {},
   getFieldStepName: () => '',
   submitStep: () => {},
   goToStep: () => {},
@@ -20,10 +20,10 @@ export const useForm = (
   selector = (state: State): any => {},
 ): UseFormValues => {
   const ctx = useContext(FormizContext);
-  const connectedStoreRef = useRef<UseStore<State>>();
   const selectorRef = useRef<(state: State) => any>();
   selectorRef.current = selector;
 
+  const connectedStoreRef = useRef<UseStore<State>>();
   const exposedActions = ctx?.useStore((s) => s.exposedActions);
   const state = ctx?.useStore((s) => selector(s));
   const [connectedExposedActions, setConnectedExposedActions] = useState(
@@ -41,17 +41,16 @@ export const useForm = (
     [ctx],
   );
 
-  useEffect(
-    () =>
-      connectedStoreRef.current?.subscribe(
-        (s: any) => {
-          setConnectedState(s);
-        },
-        (s) => selectorRef.current?.(s),
-        shallow,
-      ),
-    [],
-  );
+  useEffect(() => {
+    const unsub = connectedStoreRef.current?.subscribe(
+      (s: any) => {
+        setConnectedState(s);
+      },
+      (s) => selectorRef.current?.(s),
+      shallow,
+    );
+    return () => unsub && unsub();
+  }, [connectedStoreRef.current]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return {
     connect,

@@ -131,7 +131,7 @@ export interface FormInternalActions {
   registerStep(name: string, step?: Partial<StepState>): void;
   unregisterStep(name: string): void;
   updateStep(name: string, step?: Partial<StepState>): void;
-  registerField(name: string, field?: Partial<FieldState>): void;
+  registerField(od: string, field?: { name: string } & Partial<FieldState>): void;
   unregisterField(id: string): void;
   updateField(id: string, field: Partial<FieldState>): void;
 }

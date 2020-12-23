@@ -152,21 +152,24 @@ export const createStore = ({
           });
         });
       },
-      registerField: (name, field = {}) => {
+      registerField: (id, field = { name: '' }) => {
         set((state) => {
-          const defaultField = getDefaultField(name);
+          const oldField = state.fields.find((f) => f.id === id);
+          const defaultField = getDefaultField(field.name);
           const initialValue =
-            lodashGet(initialValuesRef.current, name) ??
+            lodashGet(initialValuesRef.current, field.name) ??
             field.initialValue ??
             field.value ??
             defaultField.value;
 
           const newField = {
             ...defaultField,
+            ...(oldField || {}),
             ...(field || {}),
             value: initialValue,
             formattedValue: initialValue,
             initialValue,
+            id,
           };
 
           const fields = [...state.fields, newField];

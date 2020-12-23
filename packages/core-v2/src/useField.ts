@@ -14,6 +14,7 @@ import {
 import { getDefaultField, getExposedField } from './utils/form.utils';
 import { FormizContext } from './Formiz';
 import { FormizStepContext } from './FormizStep';
+import { getFieldUniqueId } from './utils/ids.utils';
 
 const getValidationsWithRequired = (
   validations: FieldValidationObject[],
@@ -41,6 +42,9 @@ export const useField = ({
   ...otherProps
 }: FieldProps): UseFieldValues => {
   const isMountedRef = useRef(true);
+  const fieldIdRef = useRef(getFieldUniqueId());
+  const nameRef = useRef(name);
+  nameRef.current = name;
   const formizContext = useContext(FormizContext);
 
   if (!formizContext) {
@@ -51,9 +55,14 @@ export const useField = ({
 
   const formizStepContext = useContext(FormizStepContext);
   const stepName = formizStepContext?.name;
+  const stepNameRef = useRef(stepName);
+  stepNameRef.current = stepName;
 
   const field = useStore(
-    useCallback((state) => state.fields?.find((f) => f.name === name), [name]),
+    useCallback(
+      (state) => state.fields?.find((f) => f.id === fieldIdRef.current),
+      [],
+    ),
     shallow,
   );
   const form = useStore<FormStateInField>(
@@ -118,16 +127,26 @@ export const useField = ({
 
   // Register / Unregister Field
   useEffect(() => {
-    registerField(name, {
-      stepName,
+    const fieldId = fieldIdRef.current;
+    registerField(fieldId, {
+      name: nameRef.current,
+      stepName: stepNameRef.current,
       initialValue: formatValueRef.current?.(defaultValueRef.current),
     });
     return () => {
-      if (fieldRef.current?.id) {
-        unregisterField(fieldRef.current.id);
+      if (fieldId) {
+        unregisterField(fieldId);
       }
     };
-  }, [registerField, unregisterField, name, stepName]);
+  }, [registerField, unregisterField]);
+
+  // Update field
+  useEffect(() => {
+    updateField(fieldIdRef.current, {
+      name: name,
+      stepName: stepName,
+    });
+  }, [updateField, name, stepName]);
 
   // Trigger setValue if value is changed in global state
   useEffect(
