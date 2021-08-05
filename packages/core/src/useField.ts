@@ -71,8 +71,8 @@ export const useField = ({
 
   const [formState, setFormState] = useState(formStateRef?.current ?? defaultFormState);
   const initValue = (() => {
-    if (fromSetFieldsValuesRef?.current?.[name] !== undefined) {
-      return fromSetFieldsValuesRef?.current?.[name];
+    if (get(fromSetFieldsValuesRef?.current, name) !== undefined) {
+      return get(fromSetFieldsValuesRef?.current, name);
     }
     if (keepValuesRef.current?.[name] !== undefined) {
       return keepValuesRef.current?.[name];
