@@ -286,7 +286,7 @@ export const Formiz: React.FC<FormizProps> = ({
   const registerField = (field: Field): void => {
     delete keepValuesRef.current[field.name];
     delete fromSetFieldsValuesRef.current[field.name];
-    omit(initialValuesRef.current, field.name);
+    initialValuesRef.current = omit(initialValuesRef.current, field.name);
     fieldsRef.current = fieldsActions.registerField(fieldsRef.current, field);
     onFieldsUpdate.push();
     onChangeRef.current(getFormValues(fieldsRef.current));
