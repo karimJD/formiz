@@ -330,6 +330,10 @@ export const Formiz: React.FC<FormizProps> = ({
     reset,
   };
 
+  const removeFromInitialValues = (fieldName: string) => {
+    initialValuesRef.current = omit(initialValuesRef.current, fieldName);
+  }
+
   const contextValue: FormContextValue = {
     formStateRef,
     fieldsRef,
@@ -339,6 +343,7 @@ export const Formiz: React.FC<FormizProps> = ({
       registerField,
       updateField,
       unregisterField,
+      removeFromInitialValues,
     },
     formMethods,
     keepValuesRef,

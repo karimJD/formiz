@@ -140,6 +140,7 @@ export const useField = ({
       .subscription
       .subscribe(() => {
         const value = get(initialValuesRef?.current, nameRef.current) ?? defaultValueRef.current;
+
         setState((prevState) => ({
           ...prevState,
           error: [],
@@ -148,13 +149,26 @@ export const useField = ({
           isPristine: true,
           value,
         }));
+
         onChangeRef.current(
           formatValueRef.current(value),
           value,
         );
+
+        if (actionsRef.current?.removeFromInitialValues) {
+          actionsRef.current.removeFromInitialValues(nameRef.current);
+        }
       });
     return () => subscription.unsubscribe();
-  }, [subjectsRef, initialValuesRef, defaultValueRef, nameRef, onChangeRef, formatValueRef]);
+  }, [
+    subjectsRef,
+    initialValuesRef,
+    defaultValueRef,
+    nameRef,
+    onChangeRef,
+    formatValueRef,
+    actionsRef,
+  ]);
 
   // Update validations
   useEffect(() => {
