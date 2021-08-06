@@ -241,7 +241,7 @@ export const Formiz: React.FC<FormizProps> = ({
         fromSetFieldsValuesRef.current,
         Object.keys(objectOfValues)
           .filter((key) => !fieldsRef.current.find((f) => f.name === key))
-          .reduce((acc, cur) => ({ ...acc, [cur]: objectOfValues[cur] }), {})
+          .reduce((acc, cur) => ({ ...acc, [cur]: objectOfValues[cur] }), {}),
       );
     }
     fieldsRef.current = fieldsActions.setFieldsValues(fieldsRef.current, objectOfValues);
@@ -332,7 +332,7 @@ export const Formiz: React.FC<FormizProps> = ({
 
   const removeFromInitialValues = (fieldName: string) => {
     initialValuesRef.current = omit(initialValuesRef.current, fieldName);
-  }
+  };
 
   const contextValue: FormContextValue = {
     formStateRef,
