@@ -14,6 +14,7 @@ import { UseCase1 } from './pages/UseCase1/index';
 import { ExoticFields } from './pages/ExoticFields';
 import { DynamicSteps } from './pages/DynamicSteps';
 import { Steppers } from './pages/Steppers';
+import { Playground } from './pages/Playground';
 
 function App() {
   return (
@@ -51,6 +52,10 @@ function App() {
             </Route>
             <Route path="/real-life-1" exact>
               <UseCase1 />
+            </Route>
+
+            <Route path="/playground" exact>
+              <Playground />
             </Route>
           </Box>
         </Flex>
