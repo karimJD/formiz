@@ -61,6 +61,7 @@ export const Playground = () => {
 
   return (
     <Formiz
+      key={form.resetKey}
       connect={form}
       onValidSubmit={handleSubmit}
       autoForm
