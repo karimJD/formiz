@@ -139,10 +139,7 @@ export const useField = ({
     const subscription = subjectsRef.current.onReset
       .subscription
       .subscribe(() => {
-        const value = initialValuesRef?.current?.[nameRef.current] ?? defaultValueRef.current;
-        if (initialValuesRef?.current) {
-          delete initialValuesRef.current[nameRef.current];
-        }
+        const value = get(initialValuesRef?.current, nameRef.current) ?? defaultValueRef.current;
         setState((prevState) => ({
           ...prevState,
           error: [],
