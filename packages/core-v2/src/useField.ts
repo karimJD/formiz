@@ -45,27 +45,25 @@ export const useField = ({
   const fieldIdRef = useRef(getFieldUniqueId());
   const nameRef = useRef(name);
   nameRef.current = name;
-  const formizContext = useContext(FormizContext);
+  const useStoreRef = useContext(FormizContext);
 
-  if (!formizContext) {
+  if (!useStoreRef || !useStoreRef.current) {
     throw new Error('TODO');
   }
-
-  const { useStore } = formizContext;
 
   const formizStepContext = useContext(FormizStepContext);
   const stepName = formizStepContext?.name;
   const stepNameRef = useRef(stepName);
   stepNameRef.current = stepName;
 
-  const field = useStore(
+  const field = useStoreRef.current(
     useCallback(
       (state) => state.fields?.find((f) => f.id === fieldIdRef.current),
       [],
     ),
     shallow,
   );
-  const form = useStore<FormStateInField>(
+  const form = useStoreRef.current<FormStateInField>(
     useCallback(
       ({
         form: { id, resetKey, isSubmitted, initialStepName, navigatedStepName },
@@ -80,7 +78,7 @@ export const useField = ({
     ),
     shallow,
   );
-  const step = useStore<StepStateInField>(
+  const step = useStoreRef.current<StepStateInField>(
     useCallback(
       ({ steps }) => {
         const currentStep = steps.find((step) => step.name === stepName);
@@ -93,7 +91,7 @@ export const useField = ({
     shallow,
   );
   const isSubmitted = step?.isSubmitted ?? form.isSubmitted;
-  const { registerField, unregisterField, updateField } = useStore(
+  const { registerField, unregisterField, updateField } = useStoreRef.current(
     useCallback((state) => state.internalActions, []),
   );
 
@@ -111,10 +109,11 @@ export const useField = ({
   const formatValueRef = useRef<FieldProps['formatValue']>();
   formatValueRef.current = formatValue;
 
+  const fieldId = field?.id;
   const setValue = useCallback(
     (value) => {
-      if (!field?.id) return;
-      updateField(field.id, {
+      if (!fieldId) return;
+      updateField(fieldId, {
         name,
         value,
         formattedValue: formatValueRef.current?.(value),
@@ -122,7 +121,7 @@ export const useField = ({
         isPristine: false,
       });
     },
-    [field?.id, name, updateField],
+    [fieldId, name, updateField],
   );
 
   // Register / Unregister Field

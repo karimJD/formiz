@@ -4,7 +4,9 @@ import { FormizContextType, FormizProps, State } from './types';
 import { createStore } from './store';
 import { UseStore } from 'zustand';
 
-export const FormizContext = React.createContext<FormizContextType>(null);
+export const FormizContext = React.createContext<FormizContextType | undefined>(
+  undefined,
+);
 
 export const Formiz: React.FC<FormizProps> = ({
   autoForm = false,
@@ -39,12 +41,12 @@ export const Formiz: React.FC<FormizProps> = ({
 
   useEffect(() => {
     if (connect) {
-      connect(useStoreRef.current);
+      connect(useStoreRef);
     }
   }, [connect]);
 
   return (
-    <FormizContext.Provider value={{ useStore: useStoreRef.current }}>
+    <FormizContext.Provider value={useStoreRef as FormizContextType}>
       {!autoForm ? (
         children
       ) : (

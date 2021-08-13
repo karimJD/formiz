@@ -15,19 +15,18 @@ export const FormizStep: React.FC<FormizStepProps> = ({
   style = {},
   ...rest
 }) => {
-  const formizContext = useContext(FormizContext);
+  const useStoreRef = useContext(FormizContext);
   const nameRef = useRef<string>(name);
   nameRef.current = name;
 
-  if (!formizContext) {
+  if (!useStoreRef || !useStoreRef.current) {
     throw new Error('TODO');
   }
 
-  const { useStore } = formizContext;
-  const { registerStep, unregisterStep, updateStep } = useStore(
+  const { registerStep, unregisterStep, updateStep } = useStoreRef.current(
     useCallback((state) => state.internalActions, []),
   );
-  const step = useStore<StepStateInStep>(
+  const step = useStoreRef.current<StepStateInStep>(
     useCallback(
       ({ steps }): StepStateInStep => {
         const currentStep = steps.find((s) => s.name === name);

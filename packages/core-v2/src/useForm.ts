@@ -19,26 +19,28 @@ export const defaultExposedActions: FormExposedActions = {
 export const useForm = (
   selector = (state: State): any => {},
 ): UseFormValues => {
-  const ctx = useContext(FormizContext);
+  const useStoreRef = useContext(FormizContext);
   const selectorRef = useRef<(state: State) => any>();
   selectorRef.current = selector;
 
   const connectedStoreRef = useRef<UseStore<State>>();
-  const exposedActions = ctx?.useStore((s) => s.exposedActions);
-  const state = ctx?.useStore((s) => selector(s));
+  const exposedActions = useStoreRef?.current?.((s) => s.exposedActions);
+  const state = useStoreRef?.current?.((s) => selector(s));
   const [connectedExposedActions, setConnectedExposedActions] = useState(
     defaultExposedActions,
   );
   const [connectedState, setConnectedState] = useState();
 
   const connect = useCallback(
-    (store) => {
-      if (ctx) return;
-      connectedStoreRef.current = store;
-      setConnectedExposedActions(store.getState().exposedActions);
-      setConnectedState(selectorRef.current?.(store.getState()));
+    (storeRef) => {
+      if (useStoreRef) return;
+      connectedStoreRef.current = storeRef.current;
+      setConnectedExposedActions(storeRef.current.getState().exposedActions);
+
+      // This is not working
+      setConnectedState(selectorRef.current?.(storeRef.current.getState()));
     },
-    [ctx],
+    [useStoreRef],
   );
 
   useEffect(() => {

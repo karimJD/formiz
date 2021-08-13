@@ -8,7 +8,7 @@ import { PageHeader } from '../components/PageHeader';
 import { useToastValues } from '../hooks/useToastValues';
 import { PageLayout } from '../layout/PageLayout';
 
-const FIELDS_BY_STEP = 20;
+const FIELDS_BY_STEP = 200;
 
 export const LotOfFields = () => {
   const form = useForm((s) => null);

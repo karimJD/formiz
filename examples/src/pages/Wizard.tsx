@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Formiz, useForm, FormizStep } from '@formiz/core';
+import { Formiz, useForm, FormizStep } from '@formiz/core-v2';
 import { isEmail } from '@formiz/validations';
 import { Button, Grid, Box } from '@chakra-ui/react';
 import { FieldInput } from '../components/Fields/FieldInput';
@@ -10,10 +10,10 @@ import { useToastValues } from '../hooks/useToastValues';
 const fakeDelay = (delay = 500) => new Promise((r) => setTimeout(r, delay));
 
 export const Wizard = () => {
-  const form = useForm({ subscribe: 'form' });
+  const form = useForm();
   const toastValues = useToastValues();
   const [status, setStatus] = useState('idle');
-  const isLoading = status === 'loading' || form.isValidating;
+  const isLoading = status === 'loading' || form.state?.isValidating;
 
   /**
    * Hook into the submitStep method to handle some actions before changing step
@@ -22,16 +22,16 @@ export const Wizard = () => {
   const handleSubmitStep = async (event) => {
     event.preventDefault();
     if (
-      !form.currentStep
-      || !form.currentStep?.isValid
-      || !form.currentStep?.name
+      !form.state?.currentStep ||
+      !form.state?.currentStep?.isValid ||
+      !form.state?.currentStep?.name
     ) {
       form.submitStep();
       return;
     }
 
     setStatus('loading');
-    console.log(`Submitting ${form.currentStep?.name}...`); // eslint-disable-line no-console
+    console.log(`Submitting ${form.state?.currentStep?.name}...`); // eslint-disable-line no-console
     await fakeDelay();
 
     setStatus('success');
@@ -48,7 +48,7 @@ export const Wizard = () => {
     setStatus('success');
 
     toastValues(values);
-    form.invalidateFields({
+    form.setFieldsErrors({
       name: 'You can display an error after an API call',
     });
     const stepWithError = form.getFieldStepName('name');
@@ -58,8 +58,8 @@ export const Wizard = () => {
   };
 
   return (
-    <Formiz connect={form} onValidSubmit={handleSubmit}>
-      <PageLayout>
+    <Formiz connect={form.connect} onValidSubmit={handleSubmit}>
+      <PageLayout v2>
         <form noValidate onSubmit={handleSubmitStep}>
           <PageHeader githubPath="Wizard.js">Wizard</PageHeader>
           <FormizStep name="step1">
@@ -82,9 +82,9 @@ export const Wizard = () => {
           <FormizStep name="step3">
             <FieldInput name="company" label="Company" />
           </FormizStep>
-          {!!form.steps?.length && (
+          {!!form.state?.steps?.length && (
             <Grid templateColumns="1fr 2fr 1fr" alignItems="center">
-              {!form.isFirstStep && (
+              {!form.state?.isFirstStep && (
                 <Button gridColumn="1" onClick={form.prevStep}>
                   Previous
                 </Button>
@@ -95,7 +95,8 @@ export const Wizard = () => {
                 fontSize="sm"
                 color="gray.500"
               >
-                Step {(form.currentStep?.index ?? 0) + 1} / {form.steps.length}
+                Step {(form.state?.currentStep?.index ?? 0) + 1} /{' '}
+                {form.state?.steps.length}
               </Box>
               <Button
                 type="submit"
@@ -103,11 +104,12 @@ export const Wizard = () => {
                 colorScheme="brand"
                 isLoading={isLoading}
                 isDisabled={
-                  (form.isLastStep ? !form.isValid : !form.isStepValid)
-                  && form.isStepSubmitted
+                  (form.state?.isLastStep
+                    ? !form.state?.isValid
+                    : !form.state?.isStepValid) && form.state?.isStepSubmitted
                 }
               >
-                {form.isLastStep ? 'Submit' : 'Next'}
+                {form.state?.isLastStep ? 'Submit' : 'Next'}
               </Button>
             </Grid>
           )}

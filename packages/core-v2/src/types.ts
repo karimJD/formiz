@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, RefObject } from 'react';
 import { UseStore } from 'zustand';
 
 export type FieldValue = any;
@@ -131,7 +131,10 @@ export interface FormInternalActions {
   registerStep(name: string, step?: Partial<StepState>): void;
   unregisterStep(name: string): void;
   updateStep(name: string, step?: Partial<StepState>): void;
-  registerField(od: string, field?: { name: string } & Partial<FieldState>): void;
+  registerField(
+    od: string,
+    field?: { name: string } & Partial<FieldState>,
+  ): void;
   unregisterField(id: string): void;
   updateField(id: string, field: Partial<FieldState>): void;
 }
@@ -149,6 +152,4 @@ export type State = {
   exposedActions: FormExposedActions;
 };
 
-export type FormizContextType = {
-  useStore: UseStore<State>;
-} | null;
+export type FormizContextType = RefObject<UseStore<State>>;
