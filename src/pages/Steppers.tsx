@@ -20,7 +20,6 @@ const PreviousButton = (props) => {
   const isDarkTheme = useDarkTheme();
   const form = useForm({ subscribe: 'form' });
 
-  console.log(isDarkTheme);
   if (form.isFirstStep) {
     return <Box />;
   }
